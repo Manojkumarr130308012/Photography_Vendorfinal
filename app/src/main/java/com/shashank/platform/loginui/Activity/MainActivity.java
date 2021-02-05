@@ -1,18 +1,24 @@
-package com.shashank.platform.loginui;
+package com.shashank.platform.loginui.Activity;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.shashank.platform.loginui.R;
 
 public class MainActivity extends AppCompatActivity {
 
     ImageView imageView;
     TextView textView;
     int count = 0;
-
+Button signin;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -21,6 +27,15 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         imageView = findViewById(R.id.imageView);
         textView = findViewById(R.id.textView);
+        signin = findViewById(R.id.signin);
+
+        signin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent i=new Intent(MainActivity.this,Bottommenu.class);
+                startActivity(i);
+            }
+        });
 
     }
 }

@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:focusableInTouchMode="true"
-    tools:context=".MainActivity">
+    tools:context=".Activity.MainActivity">
 
     <FrameLayout
         android:layout_width="wrap_content"
@@ -83,46 +83,30 @@
         android:paddingLeft="32dp"
         android:paddingRight="32dp">
 
+        <EditText
+            android:id="@+id/editText"
+            android:layout_width="wrap_content"
+            android:layout_height="60dp"
+            android:fontFamily="@font/montserrat_semibold"
+            android:paddingLeft="60dp"
+            android:hint="Username"
+            android:textColorHint="@color/colorText"
+            android:textColor="@color/colorText"
+            android:background="@drawable/bg_txt_username"
+            />
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textColorHint="#96ffffff"
-            android:background="@drawable/buttonshapewhitebg">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:drawablePadding="16dp"
-                android:drawableRight="@drawable/ic_email_white_24dp"
-                android:fontFamily="@font/calibri"
-                android:hint="Email"
-                android:inputType="textEmailAddress"
-                android:maxLines="1"
-                android:textColor="@android:color/white"
-                android:textSize="16sp" />
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textColorHint="#96ffffff"
-            android:layout_marginTop="6dp"
-            android:background="@drawable/buttonshapewhitebg"
-            android:theme="@style/EditScreenTextInputLayoutStyle">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:drawablePadding="16dp"
-                android:drawableRight="@drawable/ic_lock_white_24dp"
-                android:fontFamily="@font/calibri"
-                android:hint="Password"
-                android:inputType="textPassword"
-                android:maxLines="1"
-                android:textColor="@android:color/white"
-                android:textSize="16sp" />
-        </com.google.android.material.textfield.TextInputLayout>
+        <EditText
+            android:id="@+id/editText2"
+            android:layout_width="wrap_content"
+            android:layout_height="60dp"
+            android:fontFamily="@font/montserrat_semibold"
+            android:paddingLeft="60dp"
+            android:hint="Password"
+            android:textColorHint="@color/colorText"
+            android:textColor="@color/colorText"
+            android:inputType="textPassword"
+            android:background="@drawable/bg_txt_password"
+             />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -154,21 +138,14 @@
                 android:textAllCaps="false"
                 android:textColor="#96ffffff"
                 android:textSize="16dp"
+                android:id="@+id/signin"
                 android:textStyle="bold" />
 
 
         </LinearLayout>
 
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:fontFamily="@font/calibri"
-            android:text="Forgot Password?"
-            android:textAlignment="center"
-            android:textColor="#96ffffff"
-            android:textSize="16sp" />
+
 
 
     </LinearLayout>

@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#FFFFFF</color>
-    <color name="colorPrimaryDark">#FFFFFF</color>
-    <color name="colorAccent">#FFFFFF</color>
+    <color name="colorPrimary">#F50057</color>
+    <color name="colorPrimaryDark">#F50057</color>
+    <color name="colorAccent">#F50057</color>
     <color name="textInputLayout">#96ffffff</color>
-
+    <color name="bgBottomNavigation">#fe485a</color>
 
 
         <color name="blackTextColor">#000</color>
@@ -13,7 +13,7 @@
         <color name="color_preloader_start">#29aef5</color>
         <color name="primary_dark">#29aef5</color>
         <color name="colorLoginPrimaryDark">#FDFFFF</color>
-
+    <color name="colorText">#504F60</color>
         <color name="light">#FFFFFF</color>
         <color name="block">#000000</color>
 
