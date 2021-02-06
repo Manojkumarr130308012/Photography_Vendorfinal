@@ -18,7 +18,7 @@ public class MainActivity extends AppCompatActivity {
     ImageView imageView;
     TextView textView;
     int count = 0;
-Button signin;
+    Button signin,signout;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -28,11 +28,21 @@ Button signin;
         imageView = findViewById(R.id.imageView);
         textView = findViewById(R.id.textView);
         signin = findViewById(R.id.signin);
+        signout = findViewById(R.id.signout);
 
         signin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent i=new Intent(MainActivity.this,Bottommenu.class);
+                startActivity(i);
+            }
+        });
+
+
+        signout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent i=new Intent(MainActivity.this,Plans.class);
                 startActivity(i);
             }
         });

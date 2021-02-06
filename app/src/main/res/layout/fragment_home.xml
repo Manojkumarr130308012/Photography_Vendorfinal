@@ -28,7 +28,7 @@
             android:padding="13dp"
             android:text="Gallery"
             android:textAllCaps="true"
-            android:textColor="@color/white"
+            android:textColor="@color/primary_dark"
             android:textSize="14sp"
             android:textStyle="bold" />
 
@@ -46,7 +46,7 @@
             android:padding="13dp"
             android:text="Videos"
             android:textAllCaps="true"
-            android:textColor="@color/primary_dark"
+            android:textColor="@color/white"
             android:textSize="14sp"
             android:textStyle="bold" />
 
@@ -76,7 +76,14 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/lin2"
-        android:orientation="vertical"></LinearLayout>
+        android:orientation="vertical">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+        </androidx.recyclerview.widget.RecyclerView>
+    </LinearLayout>
 
 </LinearLayout>
 
