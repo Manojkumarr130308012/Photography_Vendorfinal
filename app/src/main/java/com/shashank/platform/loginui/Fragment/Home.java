@@ -1,29 +1,46 @@
 package com.shashank.platform.loginui.Fragment;
 
+import android.Manifest;
+import android.content.ClipboardManager;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.view.ContextMenu;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.Gallery;
 import android.widget.GridView;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.shashank.platform.loginui.Activity.Image;
+import com.shashank.platform.loginui.Activity.Imagepick;
 import com.shashank.platform.loginui.Adapter.CustomGalleryAdapter;
 import com.shashank.platform.loginui.R;
-import com.shashank.platform.loginui.VideoAdapter;
-import com.shashank.platform.loginui.YouTubeVideos;
+import com.shashank.platform.loginui.Util.VideoAdapter;
+import com.shashank.platform.loginui.Util.YouTubeVideos;
 
+import java.util.ArrayList;
 import java.util.Vector;
+
+import static android.app.Activity.RESULT_OK;
+import static android.content.Context.CLIPBOARD_SERVICE;
 
 
 public class Home extends Fragment {
@@ -32,14 +49,24 @@ View view;
     Gallery simpleGallery;
     CustomGalleryAdapter customGalleryAdapter;
     ImageView selectedImageView;
-    LinearLayout lin1,lin2;
+    RelativeLayout lin1;
+    RelativeLayout lin2;
     TextView Accesriesinfobtn,digitalsbtn;
     RecyclerView recyclerView;
     Vector<YouTubeVideos> youtubeVideos = new Vector<YouTubeVideos>();
+    Button addphoto;
+    Button upload;
     // array of images
     int[] images = {R.drawable.ic_launcher_background, R.drawable.ic_launcher_background, R.drawable.ic_launcher_background, R.drawable.ic_launcher_background, R.drawable.ic_launcher_background,
             R.drawable.ic_launcher_background, R.drawable.ic_launcher_background, R.drawable.ic_launcher_background, R.drawable.ic_launcher_background, R.drawable.ic_launcher_background, R.drawable.ic_launcher_background,
             R.drawable.ic_launcher_background, R.drawable.ic_launcher_background};
+
+    private static final int INTENT_REQUEST_GET_IMAGES = 13;
+    static final int OPEN_MEDIA_PICKER = 1;
+    
+    ArrayList<Uri> image_uris = new ArrayList<Uri>();
+    private ViewGroup mSelectedImagesContainer;
+    TextView editText;
     public Home() {
         // Required empty public constructor
     }
@@ -54,6 +81,85 @@ View view;
         lin2 = view.findViewById(R.id.lin2);
         Accesriesinfobtn = view.findViewById(R.id.personalinfobtn);
         digitalsbtn = view.findViewById(R.id.Bussinessbtn);
+        addphoto = view.findViewById(R.id.addphoto);
+        upload = view.findViewById(R.id.upload);
+
+        if (ContextCompat.checkSelfPermission(getActivity(),
+                Manifest.permission.READ_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED) {
+
+            // Should we show an explanation?
+            if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(),
+                    Manifest.permission.READ_EXTERNAL_STORAGE)) {
+
+                // Show an expanation to the user *asynchronously* -- don't block
+                // this thread waiting for the user's response! After the user
+                // sees the explanation, try again to request the permission.
+
+            } else {
+
+                // No explanation needed, we can request the permission.
+
+                ActivityCompat.requestPermissions(getActivity(),
+                        new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                        1);
+
+                // MY_PERMISSIONS_REQUEST_READ_CONTACTS is an
+                // app-defined int constant. The callback method gets the
+                // result of the request.
+            }
+        }
+
+        addphoto.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+               Intent i=new Intent(getActivity(), Imagepick.class);
+               startActivity(i);
+            }
+        });
+
+
+        upload.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // Create an alert builder
+                AlertDialog.Builder builder
+                        = new AlertDialog.Builder(getActivity());
+                builder.setTitle("Paste Video Url");
+
+
+                // set the custom layout
+                final View customLayout
+                        = getLayoutInflater()
+                        .inflate(
+                                R.layout.custom_layout,
+                                null);
+                builder.setView(customLayout);
+
+                editText = customLayout.findViewById(R.id.tvPaste);
+                registerForContextMenu(editText);
+
+                // add a button
+                builder.setPositiveButton("OK",
+                                new DialogInterface.OnClickListener() {
+
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which)
+                                    {
+                                        // send data from the
+                                        // AlertDialog to the Activity
+
+
+                                    }
+                                });
+
+                // create and show
+                // the alert dialog
+                AlertDialog dialog
+                        = builder.create();
+                dialog.show();
+            }
+        });
 
         Accesriesinfobtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -115,5 +221,49 @@ View view;
         recyclerView.setAdapter(videoAdapter);
 
         return view;
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        // Check which request we're responding to
+        if (requestCode == OPEN_MEDIA_PICKER) {
+            // Make sure the request was successful
+            if (resultCode == RESULT_OK && data != null) {
+                ArrayList<String> selectionResult=data.getStringArrayListExtra("result");
+            }
+        }
+    }
+
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, v, menuInfo);
+
+        menu.setHeaderTitle("Options");
+        switch (v.getId()) {
+
+            case R.id.tvPaste:
+                menu.add(0, v.getId(), 0, "Paste");
+                break;
+        }
+    }
+
+    @Override
+    public boolean onContextItemSelected(@NonNull MenuItem item) {
+
+        switch (item.getItemId()) {
+
+            case R.id.tvPaste:
+                ClipboardManager manager = (ClipboardManager) getActivity().getSystemService(CLIPBOARD_SERVICE);
+                if (manager != null && manager.getPrimaryClip() != null && manager.getPrimaryClip().getItemCount() > 0) {
+                    editText.setText(manager.getPrimaryClip().getItemAt(0).getText().toString());
+                }
+
+                break;
+        }
+
+
+        return super.onContextItemSelected(item);
+
+
     }
 }

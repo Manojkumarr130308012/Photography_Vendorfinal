@@ -6,6 +6,9 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.CAMERA" />
 
     <application
         android:allowBackup="true"
@@ -14,20 +17,34 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".Activity.Plans"></activity>
-        <activity android:name=".Activity.Register" />
-        <activity android:name=".Activity.Image" />
-        <activity android:name=".Activity.Bottommenu" />
-        <activity
-            android:name=".Activity.MainActivity"
+        <activity android:name=".Activity.Splash"
             android:configChanges="orientation|screenSize"
-            android:theme="@style/Theme.AppCompat.NoActionBar"
-            android:windowSoftInputMode="stateHidden|adjustPan">
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateHidden|adjustPan" >
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
+
+        </activity>
+        <activity android:name=".Activity.Imagepick" />
+        <activity android:name=".Activity.Plans" />
+        <activity
+            android:name=".Activity.Register"
+            android:configChanges="orientation|screenSize"
+            android:theme="@style/noAppTheme"
+            android:windowSoftInputMode="stateHidden|adjustPan" />
+        <activity android:name=".Activity.Image" />
+        <activity android:name=".Activity.Bottommenu" />
+        <activity
+            android:name=".Activity.MainActivity"
+            android:configChanges="orientation|screenSize"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateHidden|adjustPan">
+
         </activity>
     </application>
 
