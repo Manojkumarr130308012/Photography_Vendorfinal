@@ -11,6 +11,9 @@ public class Api {
     public static final String catgorurl=Mainurl+"category";
 
 
+    public static final String planurl=Mainurl+"plan";
+
+
     public static final String serviceurl=Mainurl+"services";
 
 

@@ -67,12 +67,18 @@ public class  SingleCheckAdapter extends RecyclerView.Adapter<SingleCheckAdapter
         private SingleCheckAdapter mAdapter;
         private RadioButton mRadio;
         private TextView mText;
+        private TextView mText1;
+        private TextView mText2;
+        private TextView mText3;
 
         public SingleCheckViewHolder(View itemView, final SingleCheckAdapter mAdapter) {
             super(itemView);
             this.mAdapter = mAdapter;
 
             mText = (TextView) itemView.findViewById(R.id.text);
+            mText1 = (TextView) itemView.findViewById(R.id.text1);
+            mText2 = (TextView) itemView.findViewById(R.id.text2);
+            mText3= (TextView) itemView.findViewById(R.id.text3);
             mRadio = (RadioButton) itemView.findViewById(R.id.radio);
             itemView.setOnClickListener(this);
             mRadio.setOnClickListener(this);
@@ -81,6 +87,9 @@ public class  SingleCheckAdapter extends RecyclerView.Adapter<SingleCheckAdapter
         public void setDateToView(PersonItem item, int position) throws Exception {
             mRadio.setChecked(position == mSelectedItem);
             mText.setText(item.getPersonName());
+            mText1.setText("Photos:"+item.getPhotos());
+            mText2.setText("Videos:"+item.getVideos());
+            mText3.setText("Amount:"+item.getAmount());
         }
 
         @Override

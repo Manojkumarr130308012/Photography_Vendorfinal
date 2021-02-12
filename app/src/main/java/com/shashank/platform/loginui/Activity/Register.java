@@ -1,16 +1,26 @@
 package com.shashank.platform.loginui.Activity;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.view.ContextThemeWrapper;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.core.content.FileProvider;
 
 import android.Manifest;
 import android.app.DatePickerDialog;
+import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Base64;
 import android.util.Log;
@@ -29,11 +39,21 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.DefaultRetryPolicy;
+import com.android.volley.NetworkError;
+import com.android.volley.NetworkResponse;
+import com.android.volley.NoConnectionError;
+import com.android.volley.ParseError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
+import com.android.volley.RetryPolicy;
+import com.android.volley.ServerError;
+import com.android.volley.TimeoutError;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.baoyachi.stepview.HorizontalStepView;
 import com.baoyachi.stepview.bean.StepBean;
@@ -54,7 +74,9 @@ import com.mobsandgeeks.saripaar.annotation.Length;
 import com.mobsandgeeks.saripaar.annotation.NotEmpty;
 import com.mobsandgeeks.saripaar.annotation.Pattern;
 import com.shashank.platform.loginui.Api.Api;
+import com.shashank.platform.loginui.BuildConfig;
 import com.shashank.platform.loginui.R;
+import com.shashank.platform.loginui.Util.VolleyMultipartRequest;
 import com.shuhart.stepview.StepView;
 import com.tiper.MaterialSpinner;
 
@@ -63,18 +85,37 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.UnsupportedEncodingException;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import javax.net.ssl.HttpsURLConnection;
 
 import gun0912.tedimagepicker.builder.TedImagePicker;
 import gun0912.tedimagepicker.builder.listener.OnMultiSelectedListener;
 
 public class Register extends AppCompatActivity implements Validator.ValidationListener{
     private int currentStep = 0;
-    LinearLayout lin1,lin2,lin3;
+    LinearLayout lin1,lin2,lin3,lin4;
     List<String> locationname = new ArrayList<>();
+    List<String> locationid = new ArrayList<>();
+    List<String> catgoryid = new ArrayList<>();
     List<String> catgoryname = new ArrayList<>();
     List<String> servicename = new ArrayList<>();
     MaterialSpinner loc,category;
@@ -120,6 +161,8 @@ public class Register extends AppCompatActivity implements Validator.ValidationL
     @Length(min = 3, max = 100)
     TextInputEditText password;
     private Validator validator;
+    Bitmap bitmap1,bitmap2;
+    boolean check = true;
     String dobstring,firstnamestring,lastnamestring,passwordstring,mobilestring,watsappstring,emailstring,amountstring,companynamestring,dobsting,addressstring,descriptionstring;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -133,6 +176,7 @@ public class Register extends AppCompatActivity implements Validator.ValidationL
         lin1=findViewById(R.id.lin1);
         lin2=findViewById(R.id.lin2);
         lin3=findViewById(R.id.lin3);
+        lin4=findViewById(R.id.lin4);
         IDProf1 = (ImageView) findViewById(R.id.IdProf1);
         IDProf2 = (ImageView) findViewById(R.id.IdProf2);
         password = findViewById(R.id.password);
@@ -201,7 +245,7 @@ public class Register extends AppCompatActivity implements Validator.ValidationL
             @Override
             public void onItemSelected(MaterialSpinner materialSpinner, View view, int i, long l) {
                 if (i > -1) {
-                    location = locationname.get(i).toString();
+                    location = locationid.get(i).toString();
                 } else {
                     location = "";
                 }
@@ -217,7 +261,7 @@ public class Register extends AppCompatActivity implements Validator.ValidationL
             @Override
             public void onItemSelected(MaterialSpinner materialSpinner, View view, int i, long l) {
                 if (i > -1) {
-                    catg = catgoryname.get(i).toString();
+                    catg = catgoryid.get(i).toString();
                 } else {
                     catg = "";
                 }
@@ -227,6 +271,7 @@ public class Register extends AppCompatActivity implements Validator.ValidationL
         if (currentStep == 0){
             lin2.setVisibility(View.GONE);
             lin3.setVisibility(View.GONE);
+            lin4.setVisibility(View.GONE);
         }
 
         final StepView stepView = findViewById(R.id.step_view);
@@ -256,7 +301,7 @@ public class Register extends AppCompatActivity implements Validator.ValidationL
                         lin1.setVisibility(View.GONE);
                         lin2.setVisibility(View.VISIBLE);
                         lin3.setVisibility(View.GONE);
-
+                        lin4.setVisibility(View.GONE);
                         if (currentStep < stepView.getStepCount() - 1) {
                             currentStep++;
                             stepView.go(currentStep, true);
@@ -284,6 +329,7 @@ public class Register extends AppCompatActivity implements Validator.ValidationL
                         lin1.setVisibility(View.GONE);
                         lin2.setVisibility(View.GONE);
                         lin3.setVisibility(View.VISIBLE);
+                        lin4.setVisibility(View.GONE);
                         showSelections();
                         if (currentStep < stepView.getStepCount() - 1) {
                             currentStep++;
@@ -320,7 +366,8 @@ public class Register extends AppCompatActivity implements Validator.ValidationL
                         validator.validate();
                         lin1.setVisibility(View.GONE);
                         lin2.setVisibility(View.GONE);
-                        lin3.setVisibility(View.VISIBLE);
+                        lin3.setVisibility(View.GONE);
+                        lin4.setVisibility(View.VISIBLE);
                         showSelections();
                         if (currentStep < stepView.getStepCount() - 1) {
                             currentStep++;
@@ -331,8 +378,46 @@ public class Register extends AppCompatActivity implements Validator.ValidationL
                             stepView.done(true);
 
                         }
-                        RegisterData();
+//                        RegisterData();
+//                        SendDetail();
+                    }
+                }else  if (currentStep == 3){
+                    passwordstring=password.getText().toString();
+                    if (imagestring1.equals("")&imagestring2.equals("")&location.equals(""))
+                    {
 
+                        validator.validate();
+                        if (imagestring1 == ""){
+                            Toast.makeText(Register.this, "Please Select the Profile", Toast.LENGTH_SHORT).show();
+                        }
+                        if (imagestring2 == ""){
+                            Toast.makeText(Register.this, "Please Select the Prof", Toast.LENGTH_SHORT).show();
+                        }
+//                        if (s.equals(null)){
+//                            Toast.makeText(Register.this, "Please Select the Catgory", Toast.LENGTH_SHORT).show();
+//                        }
+                        if (location.equals("")){
+                            Toast.makeText(Register.this, "Please Select the Location", Toast.LENGTH_SHORT).show();
+                        }
+
+                    }else{
+                        validator.validate();
+                        lin1.setVisibility(View.GONE);
+                        lin2.setVisibility(View.GONE);
+                        lin3.setVisibility(View.GONE);
+                        lin4.setVisibility(View.VISIBLE);
+                        showSelections();
+                        if (currentStep < stepView.getStepCount() - 1) {
+                            currentStep++;
+                            stepView.go(currentStep, true);
+
+
+                        } else {
+                            stepView.done(true);
+
+                        }
+//                        RegisterData();
+                        ImageUploadToServerFunction();
                     }
 
 
@@ -351,6 +436,7 @@ public class Register extends AppCompatActivity implements Validator.ValidationL
                     lin1.setVisibility(View.VISIBLE);
                     lin2.setVisibility(View.GONE);
                     lin3.setVisibility(View.GONE);
+                    lin4.setVisibility(View.GONE);
                     if (currentStep > 0) {
                         currentStep--;
                     }
@@ -360,6 +446,7 @@ public class Register extends AppCompatActivity implements Validator.ValidationL
                     lin1.setVisibility(View.VISIBLE);
                     lin2.setVisibility(View.GONE);
                     lin3.setVisibility(View.GONE);
+                    lin4.setVisibility(View.GONE);
                     if (currentStep > 0) {
                         currentStep--;
                     }
@@ -369,6 +456,17 @@ public class Register extends AppCompatActivity implements Validator.ValidationL
                     lin1.setVisibility(View.GONE);
                     lin2.setVisibility(View.VISIBLE);
                     lin3.setVisibility(View.GONE);
+                    lin4.setVisibility(View.GONE);
+                    if (currentStep > 0) {
+                        currentStep--;
+                    }
+                    stepView.done(false);
+                    stepView.go(currentStep, true);
+                }else  if (currentStep == 3){
+                    lin1.setVisibility(View.GONE);
+                    lin2.setVisibility(View.GONE);
+                    lin3.setVisibility(View.VISIBLE);
+                    lin4.setVisibility(View.GONE);
                     if (currentStep > 0) {
                         currentStep--;
                     }
@@ -383,32 +481,14 @@ public class Register extends AppCompatActivity implements Validator.ValidationL
         steps.add("Basic Details");
         steps.add("Business Details");
         steps.add("Documents");
+        steps.add("Final");
         steps.set(steps.size() - 1, steps.get(steps.size() - 1));
         stepView.setSteps(steps);
         IDProf1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Dexter.withContext(getApplicationContext())
-                        .withPermission(Manifest.permission.CAMERA)
-                        .withListener(new PermissionListener() {
-                            @Override
-                            public void onPermissionGranted(PermissionGrantedResponse permissionGrantedResponse) {
-                                Intent intent=new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                                startActivityForResult( intent,1);
-                            }
+                selectImage();
 
-                            @Override
-                            public void onPermissionDenied(PermissionDeniedResponse permissionDeniedResponse) {
-
-                            }
-
-                            @Override
-                            public void onPermissionRationaleShouldBeShown(com.karumi.dexter.listener.PermissionRequest permissionRequest, PermissionToken permissionToken) {
-
-                            }
-
-
-                        }).check();
             }
         });
         IDProf2.setOnClickListener(new View.OnClickListener() {
@@ -416,27 +496,7 @@ public class Register extends AppCompatActivity implements Validator.ValidationL
             public void onClick(View v) {
 
 
-                Dexter.withContext(getApplicationContext())
-                        .withPermission(Manifest.permission.CAMERA)
-                        .withListener(new PermissionListener() {
-                            @Override
-                            public void onPermissionGranted(PermissionGrantedResponse permissionGrantedResponse) {
-                                Intent intent=new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                                startActivityForResult( intent,2);
-                            }
-
-                            @Override
-                            public void onPermissionDenied(PermissionDeniedResponse permissionDeniedResponse) {
-
-                            }
-
-                            @Override
-                            public void onPermissionRationaleShouldBeShown(com.karumi.dexter.listener.PermissionRequest permissionRequest, PermissionToken permissionToken) {
-
-                            }
-
-
-                        }).check();
+                selectImage1();
 
             }
         });
@@ -445,72 +505,114 @@ public class Register extends AppCompatActivity implements Validator.ValidationL
 
 
 
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-
-        if (requestCode==0 && resultCode==RESULT_OK) {
-            Bitmap bitmap=(Bitmap)data.getExtras().get("data");
-            IDProf.setImageBitmap(bitmap);
-            imagestring=BitMapToString(bitmap);
-            Log.e("imagestring",""+imagestring);
-
-        }else if (requestCode == 1 && resultCode == RESULT_OK ) {
-            Bitmap bitmap=(Bitmap)data.getExtras().get("data");
-            IDProf1.setImageBitmap(bitmap);
-            imagestring1=BitMapToString(bitmap);
-            Log.e("imagestring1",""+imagestring1);
-        } else if (requestCode == 2 && resultCode == RESULT_OK ) {
-
-            Bitmap bitmap=(Bitmap)data.getExtras().get("data");
-            IDProf2.setImageBitmap(bitmap);
-            imagestring2=BitMapToString(bitmap);
-            Log.e("imagestring2",""+imagestring2);
-        }
-
-        super.onActivityResult(requestCode, resultCode, data);
-    }
 
 
 
-    public void EnableRuntimePermissionToAccessCamera(){
-
-        if (ActivityCompat.shouldShowRequestPermissionRationale(Register.this,
-                Manifest.permission.CAMERA))
-        {
-
-            // Printing toast message after enabling runtime permission.
-//            Toast.makeText(Addimage.this,"CAMERA permission allows us to Access CAMERA app", Toast.LENGTH_LONG).show();
-
-        } else {
-
-            ActivityCompat.requestPermissions(Register.this,new String[]{Manifest.permission.CAMERA}, RequestPermissionCode);
-
-        }
-    }
-    @Override
-    public void onRequestPermissionsResult(int RC, String per[], int[] PResult) {
-
-        switch (RC) {
-
-            case RequestPermissionCode:
-
-                if (PResult.length > 0 && PResult[0] == PackageManager.PERMISSION_GRANTED) {
-
-//                    Toast.makeText(Addimage.this,"Permission Granted, Now your application can access CAMERA.", Toast.LENGTH_LONG).show();
-
-                } else {
-
-                    Toast.makeText(Register.this,"Permission Canceled, Now your application cannot access CAMERA.", Toast.LENGTH_LONG).show();
+    private void selectImage() {
+        final CharSequence[] options = { "Take Photo", "Choose from Gallery","Cancel" };
+    AlertDialog.Builder builder = new AlertDialog.Builder(Register.this);
+        builder.setTitle("Add Photo!");
+        builder.setItems(options, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int item) {
+                if (options[item].equals("Take Photo"))
+                {
+                    Intent takePicture = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                    startActivityForResult(takePicture, 1);//zero can be replaced with any action code
 
                 }
-                break;
+                else if (options[item].equals("Choose from Gallery"))
+                {
+                    Intent pickPhoto = new Intent(Intent.ACTION_PICK,
+                            android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                    startActivityForResult(pickPhoto, 2);
+                }
+                else if (options[item].equals("Cancel")) {
+                    dialog.dismiss();
+                }
+            }
+        });
+        builder.show();
+    }
+    private void selectImage1() {
+        final CharSequence[] options = { "Take Photo", "Choose from Gallery","Cancel" };
+        AlertDialog.Builder builder = new AlertDialog.Builder(Register.this);
+        builder.setTitle("Add Photo!");
+        builder.setItems(options, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int item) {
+                if (options[item].equals("Take Photo"))
+                {
+                    Intent takePicture = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                    startActivityForResult(takePicture, 3);
+                }
+                else if (options[item].equals("Choose from Gallery"))
+                {
+                    Intent pickPhoto = new Intent(Intent.ACTION_PICK,
+                            android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                    startActivityForResult(pickPhoto, 4);
+                }
+                else if (options[item].equals("Cancel")) {
+                    dialog.dismiss();
+                }
+            }
+        });
+        builder.show();
+    }
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == RESULT_OK) {
+            if (requestCode == 1) {
+                Bundle extras = data.getExtras();
+                Bitmap imageBitmap = (Bitmap) extras.get("data");
+                    IDProf1.setImageBitmap(imageBitmap);
+                bitmap1=imageBitmap;
+                BitMapToString(imageBitmap);
+            } else if (requestCode == 2) {
+                Uri selectedImage = data.getData();
+                IDProf1.setImageURI(selectedImage);
+                Bitmap bitmap = null;
+                try {
+                    bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), selectedImage);
+                    bitmap1=bitmap;
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                ;
+                BitMapToString(bitmap);
+            } else if (requestCode == 3) {
+                Bundle extras = data.getExtras();
+                Bitmap imageBitmap = (Bitmap) extras.get("data");
+                IDProf2.setImageBitmap(imageBitmap);
+                bitmap2=imageBitmap;
+                BitMapToString1(imageBitmap);
+            } else if (requestCode == 4) {
+                Uri selectedImage = data.getData();
+                IDProf2.setImageURI(selectedImage);
+                Bitmap bitmap = null;
+                try {
+                    bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), selectedImage);
+                    bitmap2=bitmap;
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                ;
+                BitMapToString1(bitmap);
+            }
         }
     }
-    public String BitMapToString(Bitmap userImage1) {
+    public void BitMapToString(Bitmap userImage1) {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        userImage1.compress(Bitmap.CompressFormat.PNG, 40, baos);
+        userImage1.compress(Bitmap.CompressFormat.PNG, 60, baos);
         byte[] b = baos.toByteArray();
-        Document_img1 = Base64.encodeToString(b, Base64.DEFAULT);
-        return Document_img1;
+        imagestring1 = Base64.encodeToString(b, Base64.DEFAULT);
+    }
+    public void BitMapToString1(Bitmap userImage1) {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        userImage1.compress(Bitmap.CompressFormat.PNG, 60, baos);
+        byte[] b = baos.toByteArray();
+        imagestring2 = Base64.encodeToString(b, Base64.DEFAULT);
     }
     public Bitmap getResizedBitmap(Bitmap image, int maxSize) {
         int width = image.getWidth();
@@ -526,6 +628,9 @@ public class Register extends AppCompatActivity implements Validator.ValidationL
         }
         return Bitmap.createScaledBitmap(image, width, height, true);
     }
+
+
+
 
 
 
@@ -555,6 +660,7 @@ public class Register extends AppCompatActivity implements Validator.ValidationL
                             for (int i = 0; i < jObject1.length(); i++) {
                                 JSONObject jsonObject = jObject1.getJSONObject(i);
                                 locationname.add(jsonObject.getString("location_name"));
+                                locationid.add(jsonObject.getString("location_id"));
                             }
                             Log.e("locationname", "" + locationname.toString());
                             ArrayAdapter<String> _Adapter = new ArrayAdapter<String>(Register.this, android.R.layout.simple_spinner_item, locationname);
@@ -607,6 +713,7 @@ public class Register extends AppCompatActivity implements Validator.ValidationL
                             for (int i = 0; i < jObject1.length(); i++) {
                                 JSONObject jsonObject = jObject1.getJSONObject(i);
                                 catgoryname.add(jsonObject.getString("category_name"));
+                                catgoryid.add(jsonObject.getString("category_id"));
                             }
                             Log.e("catgoryname", "" + catgoryname.toString());
                             ArrayAdapter<String> _Adapter = new ArrayAdapter<String>(Register.this, android.R.layout.simple_spinner_item, catgoryname);
@@ -772,59 +879,255 @@ public class Register extends AppCompatActivity implements Validator.ValidationL
     }
 
 
-    private void RegisterData() {
-
-        Toast.makeText(this, "Loading", Toast.LENGTH_SHORT).show();
-        RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
-        JSONObject object = new JSONObject();
-        try {
-//            SimpleDateFormat currentDate = new SimpleDateFormat("dd/MM/yyyy");
-//            Date todayDate = new Date();
-//            String thisDate = currentDate.format(todayDate);
-            object.put("fname",""+firstnamestring);
-            object.put("lname",""+lastnamestring);
-            object.put("mobile",""+mobilestring);
-            object.put("whatsapp   ",""+watsappstring);
-            object.put("email",""+emailstring);
-            object.put("cname",""+companynamestring);
-            object.put("amount",""+amountstring);
-            object.put("dob",""+dobsting);
-            object.put("address",""+addressstring);
-            object.put("desc",""+descriptionstring);
-            object.put("location",""+location);
-            object.put("category",""+catg);
-            object.put("service",""+s);
-            object.put("image   ",""+imagestring1);
-            object.put("proof",""+imagestring2);
-            object.put("password",""+passwordstring);
 
 
 
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+    public byte[] getFileDataFromDrawable(Bitmap bitmap) {
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.PNG, 80, byteArrayOutputStream);
+        return byteArrayOutputStream.toByteArray();
+    }
+
+   /* private void uploadBitmap() {
+
+        //getting the tag from the edittext
 
 
-        String url =Api.registerurl;
-
-        // Enter the correct url for your api service site
-
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST,url,object,
-                new Response.Listener<JSONObject>() {
+        //our custom volley request
+        VolleyMultipartRequest volleyMultipartRequest = new VolleyMultipartRequest(Request.Method.POST, Api.registerurl,
+                new Response.Listener<NetworkResponse>() {
                     @Override
-                    public void onResponse(JSONObject response) {
-
-                        Toast.makeText(Register.this, "Sucessfully Registered", Toast.LENGTH_SHORT).show();
-                        Intent i=new Intent(Register.this,Plans.class);
-                        startActivity(i);
+                    public void onResponse(NetworkResponse response) {
+                        try {
+                            JSONObject obj = new JSONObject(new String(response.data));
+                            Toast.makeText(getApplicationContext(), obj.getString("message"), Toast.LENGTH_SHORT).show();
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
                     }
-                }, new Response.ErrorListener() {
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Toast.makeText(getApplicationContext(), error.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                }) {
+
+            *//*
+             * If you want to add more parameters with the image
+             * you can do it here
+             * here we have only one parameter with the image
+             * which is tags
+             * *//*
             @Override
-            public void onErrorResponse(VolleyError error) {
-                Log.e("xddddd",""+error);
+            protected Map<String, String> getParams() throws AuthFailureError {
+                Map<String, String> params = new HashMap<>();
+                params.put("fname",""+firstnamestring);
+                params.put("lname",""+lastnamestring);
+                params.put("mobile",""+mobilestring);
+                params.put("whatsapp   ",""+watsappstring);
+                params.put("email",""+emailstring);
+                params.put("cname",""+companynamestring);
+                params.put("amount",""+amountstring);
+                params.put("dob",""+dobsting);
+                params.put("address",""+addressstring);
+                params.put("desc",""+descriptionstring);
+                params.put("location",""+location);
+                params.put("category",""+catg);
+                params.put("service",""+s);
+                params.put("password",""+passwordstring);
+                return params;
+            }
+
+            *//*
+             * Here we are passing image by renaming it with a unique name
+             * *//*
+            @Override
+            protected Map<String, DataPart> getByteData() {
+                Map<String, DataPart> params = new HashMap<>();
+                long imagename = System.currentTimeMillis();
+                long imagename1 = System.currentTimeMillis();
+                params.put("image",new DataPart(imagename + ".png", getFileDataFromDrawable(bitmap1)));
+                params.put("proof",new DataPart(imagename1 + ".png", getFileDataFromDrawable(bitmap2)));
+                return params;
+            }
+        };
+
+        //adding the request to volley
+        Volley.newRequestQueue(this).add(volleyMultipartRequest);
+    }*/
+
+
+    public void ImageUploadToServerFunction() {
+
+        ByteArrayOutputStream byteArrayOutputStreamObject;
+        ByteArrayOutputStream byteArrayOutputStreamObject1;
+
+        byteArrayOutputStreamObject = new ByteArrayOutputStream();
+        byteArrayOutputStreamObject1 = new ByteArrayOutputStream();
+
+        bitmap1.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStreamObject);
+        bitmap2.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStreamObject1);
+
+        byte[] byteArrayVar = byteArrayOutputStreamObject.toByteArray();
+        byte[] byteArrayVar1 = byteArrayOutputStreamObject1.toByteArray();
+
+        final String ConvertImage = Base64.encodeToString(byteArrayVar, Base64.DEFAULT);
+        final String ConvertImage1 = Base64.encodeToString(byteArrayVar1, Base64.DEFAULT);
+
+        class AsyncTaskUploadClass extends AsyncTask<Void, Void, String> {
+
+            @Override
+            protected void onPreExecute() {
+
+                super.onPreExecute();
+
+//                progressDialog = ProgressDialog.show(AddFancyActivity.this, "Image is Uploading", "Please Wait", false, false);
+            }
+
+            @Override
+            protected void onPostExecute(String string1) {
+
+                super.onPostExecute(string1);
+
+                // Dismiss the progress dialog after done uploading.
+//                progressDialog.dismiss();
+
+                // Printing uploading success message coming from server on android app.
+                Toast.makeText(Register.this, string1, Toast.LENGTH_LONG).show();
+
+                Intent intent = new Intent(Register.this, Plans.class);
+                startActivity(intent);
+
+                // Setting image as transparent after done uploading.
+//                buttonChoose.setImageResource(android.R.color.transparent);
+
 
             }
-        });
-        requestQueue.add(jsonObjectRequest);
+
+            @Override
+            protected String doInBackground(Void... params) {
+
+                Register.ImageProcessClass imageProcessClass = new Register.ImageProcessClass();
+
+                HashMap<String, String> HashMapParams = new HashMap<String, String>();
+
+
+                HashMapParams.put("fname",""+firstnamestring);
+                HashMapParams.put("lname",""+lastnamestring);
+                HashMapParams.put("mobile",""+mobilestring);
+                HashMapParams.put("whatsapp   ",""+watsappstring);
+                HashMapParams.put("email",""+emailstring);
+                HashMapParams.put("cname",""+companynamestring);
+                HashMapParams.put("amount",""+amountstring);
+                HashMapParams.put("dob",""+dobsting);
+                HashMapParams.put("address",""+addressstring);
+                HashMapParams.put("desc",""+descriptionstring);
+                HashMapParams.put("location",""+location);
+                HashMapParams.put("category",""+catg);
+                HashMapParams.put("service",""+s);
+                HashMapParams.put("password",""+passwordstring);
+                HashMapParams.put("image",""+ConvertImage);
+                HashMapParams.put("proof",""+ConvertImage1);
+
+                String FinalData = imageProcessClass.ImageHttpRequest(Api.registerurl, HashMapParams);
+
+                return FinalData;
+            }
+        }
+        AsyncTaskUploadClass AsyncTaskUploadClassOBJ = new AsyncTaskUploadClass();
+
+        AsyncTaskUploadClassOBJ.execute();
+    }
+
+    public class ImageProcessClass {
+
+        public String ImageHttpRequest(String requestURL, HashMap<String, String> PData) {
+
+            StringBuilder stringBuilder = new StringBuilder();
+
+            try {
+
+                URL url;
+                HttpURLConnection httpURLConnectionObject;
+                OutputStream OutPutStream;
+                BufferedWriter bufferedWriterObject;
+                BufferedReader bufferedReaderObject;
+                int RC;
+
+                url = new URL(requestURL);
+
+                httpURLConnectionObject = (HttpURLConnection) url.openConnection();
+
+                httpURLConnectionObject.setReadTimeout(19000);
+
+                httpURLConnectionObject.setConnectTimeout(19000);
+
+                httpURLConnectionObject.setRequestMethod("POST");
+
+                httpURLConnectionObject.setDoInput(true);
+
+                httpURLConnectionObject.setDoOutput(true);
+
+                OutPutStream = httpURLConnectionObject.getOutputStream();
+
+                bufferedWriterObject = new BufferedWriter(
+
+                        new OutputStreamWriter(OutPutStream, "UTF-8"));
+
+                bufferedWriterObject.write(bufferedWriterDataFN(PData));
+
+                bufferedWriterObject.flush();
+
+                bufferedWriterObject.close();
+
+                OutPutStream.close();
+
+                RC = httpURLConnectionObject.getResponseCode();
+
+                if (RC == HttpsURLConnection.HTTP_OK) {
+
+                    bufferedReaderObject = new BufferedReader(new InputStreamReader(httpURLConnectionObject.getInputStream()));
+
+                    stringBuilder = new StringBuilder();
+
+                    String RC2;
+
+                    while ((RC2 = bufferedReaderObject.readLine()) != null) {
+
+                        stringBuilder.append(RC2);
+                    }
+                }
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return stringBuilder.toString();
+        }
+
+        private String bufferedWriterDataFN(HashMap<String, String> HashMapParams) throws UnsupportedEncodingException {
+
+            StringBuilder stringBuilderObject;
+
+            stringBuilderObject = new StringBuilder();
+
+            for (Map.Entry<String, String> KEY : HashMapParams.entrySet()) {
+
+                if (check)
+
+                    check = false;
+                else
+                    stringBuilderObject.append("&");
+
+                stringBuilderObject.append(URLEncoder.encode(KEY.getKey(), "UTF-8"));
+
+                stringBuilderObject.append("=");
+
+                stringBuilderObject.append(URLEncoder.encode(KEY.getValue(), "UTF-8"));
+            }
+
+            return stringBuilderObject.toString();
+        }
+
     }
 }
