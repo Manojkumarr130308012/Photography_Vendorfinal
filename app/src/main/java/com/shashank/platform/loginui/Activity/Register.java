@@ -76,7 +76,7 @@ import com.mobsandgeeks.saripaar.annotation.Pattern;
 import com.shashank.platform.loginui.Api.Api;
 import com.shashank.platform.loginui.BuildConfig;
 import com.shashank.platform.loginui.R;
-import com.shashank.platform.loginui.Util.VolleyMultipartRequest;
+
 import com.shuhart.stepview.StepView;
 import com.tiper.MaterialSpinner;
 
@@ -222,6 +222,7 @@ public class Register extends AppCompatActivity implements Validator.ValidationL
                             @Override
                             public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
                                 dob.setText(dayOfMonth + "/" + (monthOfYear + 1) + "/" + year);
+                                dobsting=dayOfMonth + "-" + (monthOfYear + 1) + "-" + year;
                             }
                         }, year, month, day);
                 datepicker.show();
@@ -1016,7 +1017,7 @@ public class Register extends AppCompatActivity implements Validator.ValidationL
                 HashMapParams.put("fname",""+firstnamestring);
                 HashMapParams.put("lname",""+lastnamestring);
                 HashMapParams.put("mobile",""+mobilestring);
-                HashMapParams.put("whatsapp   ",""+watsappstring);
+                HashMapParams.put("wnumber",""+watsapp.getText().toString());
                 HashMapParams.put("email",""+emailstring);
                 HashMapParams.put("cname",""+companynamestring);
                 HashMapParams.put("amount",""+amountstring);
@@ -1031,6 +1032,9 @@ public class Register extends AppCompatActivity implements Validator.ValidationL
                 HashMapParams.put("proof",""+ConvertImage1);
 
                 String FinalData = imageProcessClass.ImageHttpRequest(Api.registerurl, HashMapParams);
+
+
+                Log.e("xxxxxx",""+HashMapParams);
 
                 return FinalData;
             }
@@ -1128,6 +1132,65 @@ public class Register extends AppCompatActivity implements Validator.ValidationL
 
             return stringBuilderObject.toString();
         }
+
+    }
+
+
+
+
+    public void postdata() {
+
+
+
+        RequestQueue requestQueue = Volley.newRequestQueue(this);
+        JSONObject object = new JSONObject();
+
+        try {
+            object.put("fname",""+firstnamestring);
+            object.put("lname",""+lastnamestring);
+            object.put("mobile",""+mobilestring);
+            object.put("whatsapp   ",""+watsappstring);
+            object.put("email",""+emailstring);
+            object.put("cname",""+companynamestring);
+            object.put("amount",""+amountstring);
+            object.put("dob",""+dobsting);
+            object.put("address",""+addressstring);
+            object.put("desc",""+descriptionstring);
+            object.put("location",""+location);
+            object.put("category",""+catg);
+            object.put("service",""+s);
+            object.put("password",""+passwordstring);
+            object.put("image",""+imagestring1);
+            object.put("proof",""+imagestring2);
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+
+        String url = Api.registerurl;
+
+        // Enter the correct url for your api service site
+
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, url, object,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+
+
+//                            message = (String) response.get("status");
+                            Log.e("xdddddddddddd", "" + response);
+
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.e("xddddd", "" + error);
+
+            }
+        });
+        requestQueue.add(jsonObjectRequest);
+
 
     }
 }

@@ -32,11 +32,11 @@
             android:theme="@style/AppTheme.NoActionBar"
             android:windowSoftInputMode="stateHidden|adjustPan" >
 
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+<!--            <intent-filter>-->
+<!--                <action android:name="android.intent.action.MAIN" />-->
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+<!--                <category android:name="android.intent.category.LAUNCHER" />-->
+<!--            </intent-filter>-->
 
         </activity>
 
@@ -50,7 +50,16 @@
             android:theme="@style/noAppTheme"
             android:windowSoftInputMode="stateHidden|adjustPan" />
         <activity android:name=".Activity.Image" />
-        <activity android:name=".Activity.Bottommenu" />
+        <activity android:name=".Activity.Bottommenu">
+
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+
+
+        </activity>
         <activity
             android:name=".Activity.MainActivity"
             android:configChanges="orientation|screenSize"

@@ -13,4 +13,8 @@
     <string name="save">Save</string>
     <string name="username_already_exists">Username already exists</string>
     <string name="custom_title">Custom Title</string>
+    <string name="string_internet_connection_not_available">Internet Connection Not Available</string>
+    <string name="string_some_thing_wrong">Something went wrong.</string>
+    <string name="internal_storage">Internal storage</string>
+    <string name="chooser_title">Choose Files</string>
 </resources>

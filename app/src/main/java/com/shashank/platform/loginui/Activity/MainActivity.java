@@ -16,12 +16,16 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.android.volley.VolleyLog;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.gson.JsonObject;
 import com.shashank.platform.loginui.Api.Api;
 import com.shashank.platform.loginui.R;
 
@@ -37,6 +41,8 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
     String message;
@@ -48,6 +54,7 @@ public class MainActivity extends AppCompatActivity {
     String suburl;
     EditText username1,password1;
     ProgressBar pbar;
+    private static PostCommentResponseListener mPostCommentResponse;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -187,81 +194,133 @@ public class MainActivity extends AppCompatActivity {
 //    }
     public void postData(String usernamestr, String passstr) {
 
-        RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
-        JSONObject object = new JSONObject();
-        try {
-//            SimpleDateFormat currentDate = new SimpleDateFormat("dd/MM/yyyy");
-//            Date todayDate = new Date();
-//            String thisDate = currentDate.format(todayDate);
-            Log.e("xddddd",""+ usernamestr);Log.e("xddddd",""+ passstr);Log.e("xddddd",""+ usernamestr);Log.e("xddddd",""+ passstr);
-            object.put("mobile",""+checkusername);
-            object.put("password",""+checkpassword);
-
-
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
 
         String url =Api.Loginurl;
 
-        // Enter the correct url for your api service site
+//
+//        RequestQueue queue = Volley.newRequestQueue(this);
+//
+//
+//        StringRequest postRequest = new StringRequest(Request.Method.POST, url,
+//                new Response.Listener<String>()
+//                {
+//                    @Override
+//                    public void onResponse(String response) {
+//                        // response
+//                        Log.d("Response", response);
+//
+//                        JSONObject jsonobj = null;
+//                        try {
+//                            jsonobj = new JSONObject(response);
+//                            JSONObject jObject = jsonobj.getJSONObject("user");
+//                            message = (String) jsonobj.get("msg");
+////                            singleParsed = (String) jsonobj.get("status");
+////                            Storeuser = (String) jObject.get("username");
+////                            Storeid = (String) jObject.get("_id");
+////                            Storemob = (String) jObject.get("phone");
+//                        } catch (JSONException e) {
+//                            e.printStackTrace();
+//                        }
+//                        if(message.equals("Success")){
+//                            Intent i=new Intent(MainActivity.this,Bottommenu.class);
+//                            startActivity(i);
+//                            Toast.makeText(MainActivity.this, "Sucesss", Toast.LENGTH_SHORT).show();
+//
+//                        }else{
+//                            Toast.makeText(MainActivity.this, "Invalid Username And Password", Toast.LENGTH_SHORT).show();
+//                        }
+//
+//                    }
+//                },
+//                new Response.ErrorListener()
+//                {
+//                    @Override
+//                    public void onErrorResponse(VolleyError error) {
+//                        // error
+////                        Log.d("Error.Response", error);
+//                    }
+//                }
+//        ) {
+//            @Override
+//            protected Map<String, String> getParams()
+//            {
+//                Map<String, String>  params = new HashMap<String, String>();
+//                params.put("mobile", ""+checkusername);
+//                params.put("password", ""+checkpassword);
+//
+//                return params;
+//            }
+//        };
+//        queue.add(postRequest);
+//
+//
+//
 
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST,url,object,
-                new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject response) {
 
+
+        message="";
+
+
+
+
+
+//        mPostCommentResponse.requestStarted();
+        RequestQueue queue = Volley.newRequestQueue(this);
+        StringRequest sr = new StringRequest(Request.Method.POST,url, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+//                mPostCommentResponse.requestCompleted();
+
+
+                        JSONObject jsonobj = null;
                         try {
-                            message = (String) response.get("status");
-                            Log.e("xdddddddddddd",""+ response);
+                            jsonobj = new JSONObject(response);
+                            JSONObject jObject = jsonobj.getJSONObject("reg");
+                            message = (String) jObject.get("msg");
+//                            singleParsed = (String) jsonobj.get("status");
+//                            Storeuser = (String) jObject.get("username");
+//                            Storeid = (String) jObject.get("_id");
+//                            Storemob = (String) jObject.get("phone");
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
-
-                        if(message.equals("success")){
-                            try {
-                                JSONObject jObject = response.getJSONObject("UserDetails");
-//                                userid=(String) jObject.get("UserID");
-//                                DisplayName=(String) jObject.get("DisplayName");
-//                                Log.e("xddddd",""+userid);
-                                JSONArray jObject1 = jObject.getJSONArray("OrganizationDetails");
-                                for(int i=0;i<jObject1.length();i++){
-                                    JSONObject jsonObject = jObject1.getJSONObject(i);
-//                                    orgid.add(i,""+jsonObject.optString("ID"));
-//                                    orgname.add(i,""+jsonObject.optString("OrganizationName"));
-                                }
-
-
-
-                                //            if (singleParsed.equals("1")) {
-////                        pbar.setVisibility(View.INVISIBLE);
-//                dbHelper.insertData(Storeuser, Storeid);
-//                Intent i=new Intent(Login.this,Sidemenu.class);
-//                startActivity(i);
-//
-//            } else {
-//                Toast.makeText(Login.this, "" + message, Toast.LENGTH_SHORT).show();
-//            }
-
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
+                        if(message.equals("Success")){
+                            Intent i=new Intent(MainActivity.this,Bottommenu.class);
+                            startActivity(i);
+                            Toast.makeText(MainActivity.this, "Sucesss", Toast.LENGTH_SHORT).show();
 
                         }else{
                             Toast.makeText(MainActivity.this, "Invalid Username And Password", Toast.LENGTH_SHORT).show();
                         }
-
-
-                    }
-                }, new Response.ErrorListener() {
+            }
+        }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                Log.e("xddddd",""+error);
-
+//                mPostCommentResponse.requestEndedWithError(error);
             }
-        });
-        requestQueue.add(jsonObjectRequest);
+        }){
+            @Override
+            protected Map<String,String> getParams(){
+                Map<String,String> params = new HashMap<String, String>();
+                params.put("mobile", ""+checkusername);
+                params.put("password", ""+checkpassword);
+
+                return params;
+            }
+
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String,String> params = new HashMap<String, String>();
+                params.put("Content-Type","application/x-www-form-urlencoded");
+                return params;
+            }
+        };
+        queue.add(sr);
+    }
+
+    public interface PostCommentResponseListener {
+        public void requestStarted();
+        public void requestCompleted();
+        public void requestEndedWithError(VolleyError error);
     }
 }
