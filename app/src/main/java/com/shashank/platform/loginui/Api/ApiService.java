@@ -6,6 +6,7 @@ import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
+import retrofit2.http.Body;
 import retrofit2.http.Multipart;
 import retrofit2.http.POST;
 import retrofit2.http.Part;
@@ -17,12 +18,17 @@ import retrofit2.http.Part;
  */
 
 public interface ApiService {
-    String BASE_URL = "https://astrsmartcity.com/myprojects/ImageUpload/";
+    String BASE_URL = "https://shreejai.in/hc/api/";
 
     @Multipart
-    @POST("multi_image_upload.php")
+    @POST("vimg")
     Call<ResponseBody> uploadMultiple(
             @Part("description") RequestBody description,
             @Part("size") RequestBody size,
             @Part List<MultipartBody.Part> files);
+
+
+
+    @POST("/api/images")
+    Call<ResponseBody> uploadImages(@Body RequestBody form);
 }

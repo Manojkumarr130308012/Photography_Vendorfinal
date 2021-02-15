@@ -11,8 +11,7 @@ public class Api {
     public static final String catgorurl=Mainurl+"category";
 
 
-
-    public static final String posturl="https://astrsmartcity.com/myprojects/ImageUpload/two_image_upload.php";
+    public static final String postimageurl="https://shreejai.in/hc/api/vimg";
 
 
     public static final String planurl=Mainurl+"plan";
