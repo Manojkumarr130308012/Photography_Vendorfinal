@@ -8,7 +8,6 @@ import android.widget.AdapterView;
 import android.widget.RadioButton;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.shashank.platform.loginui.Model.PersonItem;
@@ -16,7 +15,7 @@ import com.shashank.platform.loginui.R;
 
 import java.util.List;
 
-public class  SingleCheckAdapter extends RecyclerView.Adapter<SingleCheckAdapter.SingleCheckViewHolder> {
+public class SingleCheckAdapter extends RecyclerView.Adapter<SingleCheckAdapter.SingleCheckViewHolder> {
 
     private int mSelectedItem = -1;
     private List<PersonItem> mSingleCheckList;

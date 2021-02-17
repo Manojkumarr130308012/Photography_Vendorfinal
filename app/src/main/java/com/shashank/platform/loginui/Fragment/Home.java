@@ -1,11 +1,14 @@
 package com.shashank.platform.loginui.Fragment;
 
 import android.Manifest;
+import android.app.ProgressDialog;
+import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -13,31 +16,65 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Gallery;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.shashank.platform.loginui.Activity.Image;
 import com.shashank.platform.loginui.Activity.Imagepick;
+import com.shashank.platform.loginui.Activity.Register;
 import com.shashank.platform.loginui.Adapter.CustomGalleryAdapter;
+import com.shashank.platform.loginui.Adapter.YoutubeRecyclerAdapter;
+import com.shashank.platform.loginui.Api.Api;
+import com.shashank.platform.loginui.Model.YoutubeVideo;
 import com.shashank.platform.loginui.R;
 import com.shashank.platform.loginui.Util.VideoAdapter;
 import com.shashank.platform.loginui.Util.YouTubeVideos;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Vector;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
 
 import static android.app.Activity.RESULT_OK;
 import static android.content.Context.CLIPBOARD_SERVICE;
@@ -53,7 +90,7 @@ View view;
     RelativeLayout lin2;
     TextView Accesriesinfobtn,digitalsbtn;
     RecyclerView recyclerView;
-    Vector<YouTubeVideos> youtubeVideos = new Vector<YouTubeVideos>();
+    List<YoutubeVideo> youtubeVideos;
     Button addphoto;
     Button upload;
     // array of images
@@ -66,7 +103,10 @@ View view;
     
     ArrayList<Uri> image_uris = new ArrayList<Uri>();
     private ViewGroup mSelectedImagesContainer;
-    TextView editText;
+    EditText editText;
+    @BindView(R.id.recyclerView)
+    RecyclerView recyclerViewFeed;
+    YoutubeRecyclerAdapter mRecyclerAdapter;
     public Home() {
         // Required empty public constructor
     }
@@ -135,10 +175,13 @@ View view;
                                 R.layout.custom_layout,
                                 null);
                 builder.setView(customLayout);
-
                 editText = customLayout.findViewById(R.id.tvPaste);
-                registerForContextMenu(editText);
-
+                editText.setText("");
+                ClipboardManager manager = (ClipboardManager)getActivity().getSystemService(CLIPBOARD_SERVICE);
+                ClipData pasteData = manager.getPrimaryClip();
+                ClipData.Item item = pasteData.getItemAt(0);
+                String paste = item.getText().toString();
+                editText.setText(""+paste);
                 // add a button
                 builder.setPositiveButton("OK",
                                 new DialogInterface.OnClickListener() {
@@ -146,10 +189,11 @@ View view;
                                     @Override
                                     public void onClick(DialogInterface dialog, int which)
                                     {
+                                        manager.setText("");
                                         // send data from the
                                         // AlertDialog to the Activity
-
-
+                                        postvideos(editText.getText().toString());
+                                        new Home.ReadJSON().execute(Api.videosurl+"13");
                                     }
                                 });
 
@@ -168,7 +212,7 @@ View view;
 //                Accesriesinfobtn.setVisibility(View.VISIBLE);
 
                 Accesriesinfobtn.setTextColor(getResources().getColor(R.color.primary_dark));
-                digitalsbtn.setTextColor(getResources().getColor(R.color.white));
+                digitalsbtn.setTextColor(getResources().getColor(R.color.txt_medium_gray));
 
 
             }
@@ -181,7 +225,7 @@ View view;
                 lin1.setVisibility(View.GONE);
 //                Accesriesinfobtn.setVisibility(View.VISIBLE);
 
-                Accesriesinfobtn.setTextColor(getResources().getColor(R.color.white));
+                Accesriesinfobtn.setTextColor(getResources().getColor(R.color.txt_medium_gray));
                 digitalsbtn.setTextColor(getResources().getColor(R.color.primary_dark));
 
 
@@ -207,19 +251,16 @@ View view;
 
 
         recyclerView = view.findViewById(R.id.recyclerView);
-        recyclerView.setHasFixedSize(true);
-        recyclerView.setLayoutManager( new GridLayoutManager(getActivity(),3));
+        ButterKnife.bind(getActivity());
+        // prepare data for list
 
-        youtubeVideos.add( new YouTubeVideos("<iframe width=\"100%\" height=\"100%\" src=\"https://www.youtube.com/embed/SMKPKGW083c\" frameborder=\"0\" allowfullscreen></iframe>") );
-        youtubeVideos.add( new YouTubeVideos("<iframe width=\"100%\" height=\"100%\" src=\"https://www.youtube.com/embed/DGQwd1_dpuc\" frameborder=\"0\" allowfullscreen></iframe>") );
-        youtubeVideos.add( new YouTubeVideos("<iframe width=\"100%\" height=\"100%\" src=\"https://www.youtube.com/embed/Bd3ifQo9PBI\" frameborder=\"0\" allowfullscreen></iframe>") );
-        youtubeVideos.add( new YouTubeVideos("<iframe width=\"100%\" height=\"100%\" src=\"https://www.youtube.com/embed/YTJg8q9Q940\" frameborder=\"0\" allowfullscreen></iframe>") );
-        youtubeVideos.add( new YouTubeVideos("<iframe width=\"100%\" height=\"100%\" src=\"https://www.youtube.com/embed/IUN664s7N-c\" frameborder=\"0\" allowfullscreen></iframe>") );
 
-        VideoAdapter videoAdapter = new VideoAdapter(youtubeVideos);
-
-        recyclerView.setAdapter(videoAdapter);
-
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                new Home.ReadJSON().execute(Api.videosurl+"13");
+            }
+        });
         return view;
     }
 
@@ -266,4 +307,130 @@ View view;
 
 
     }
+
+
+
+
+
+    class ReadJSON extends AsyncTask<String, Integer, String> {
+        ArrayList<YoutubeVideo> videoArrayList=new ArrayList<>();
+        @Override
+        protected String doInBackground(String... params) {
+            return readURL(params[0]);
+        }
+
+        @Override
+        protected void onPreExecute() {
+
+        }
+
+        @Override
+        protected void onPostExecute(String content) {
+            try {
+                JSONObject jsonObject = new JSONObject(content);
+                JSONArray jsonArray =  jsonObject.getJSONArray("videos");
+
+                for(int i =0;i<jsonArray.length(); i++){
+                    JSONObject productObject = jsonArray.getJSONObject(i);
+
+                    YoutubeVideo video1 = new YoutubeVideo();
+                    video1.setId(""+productObject.getString("video_id"));
+                    String ytrl=""+productObject.getString("video_src");
+                    String regExp = "/.*(?:youtu.be\\/|v\\/|u/\\w/|embed\\/|watch\\?.*&?v=)";
+                    Pattern compiledPattern = Pattern.compile(regExp);
+                    Matcher matcher = compiledPattern.matcher(ytrl);
+                    if(matcher.find()){
+                        int start = matcher.end();
+                        System.out.println("ID : " + ytrl.substring(start, start+11));
+
+                        video1.setVideoId(""+ytrl.substring(start, start+11));
+                        videoArrayList.add(video1);
+                    }
+
+
+
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+//                custPrograssbar.closePrograssBar();
+            }
+            mRecyclerAdapter = new YoutubeRecyclerAdapter(videoArrayList);
+            RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getActivity());
+            recyclerView.setLayoutManager(mLayoutManager);
+            recyclerView.setItemAnimator(new DefaultItemAnimator());
+            recyclerView.setAdapter(mRecyclerAdapter);
+        }
+    }
+
+
+    private static String readURL(String theUrl) {
+        StringBuilder content = new StringBuilder();
+        try {
+            // create a url object
+            URL url = new URL(theUrl);
+            // create a urlconnection object
+            URLConnection urlConnection = url.openConnection();
+            // wrap the urlconnection in a bufferedreader
+            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));
+            String line;
+            // read from the urlconnection via the bufferedreader
+            while ((line = bufferedReader.readLine()) != null) {
+                content.append(line + "\n");
+            }
+            bufferedReader.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return content.toString();
+    }
+
+    public void postvideos(String videourl) {
+
+        String url = Api.postvideourl;
+        final ProgressDialog progressDialog = ProgressDialog.show(getActivity(),
+                "Please wait",
+                "Loading...");
+
+        RequestQueue requestQueue= Volley.newRequestQueue(getActivity());
+
+        StringRequest stringRequest=new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                //let's parse json data
+
+                Log.e("gfgfgfghf",""+response);
+                progressDialog.dismiss();
+
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                progressDialog.dismiss();
+                Toast.makeText(getActivity(), "Post Data : Response Failed", Toast.LENGTH_SHORT).show();
+            }
+        }){
+            @Override
+            protected Map<String,String> getParams(){
+                Map<String,String> params=new HashMap<String, String>();
+                params.put("vid", "13");
+                params.put("video", ""+videourl);
+                return params;
+            }
+
+            @Override
+            public Map<String,String> getHeaders() throws AuthFailureError {
+                Map<String,String> params=new HashMap<String, String>();
+//                params.put("Content-Type","application/json;charset=utf-8");
+                params.put("Content-Type","application/x-www-form-urlencoded;charset=utf-8");
+//                params.put("Authorization","Bearer "+sToken);
+//                params.put("X-Requested-With", "XMLHttpRequest");
+                return params;
+            }
+        };
+
+        requestQueue.add(stringRequest);
+
+
+    }
+
 }

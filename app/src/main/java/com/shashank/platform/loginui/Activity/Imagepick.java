@@ -106,7 +106,7 @@ public class Imagepick extends AppCompatActivity {
         });
 
         btnUpload = findViewById(R.id.upload);
-        btnUpload.setOnClickListener(v -> uploadMultipart()  );
+        btnUpload.setOnClickListener(v -> uploadImagesToServer()  );
         arrayList = new ArrayList<>();
 
     }
@@ -266,6 +266,8 @@ public class Imagepick extends AppCompatActivity {
             String filePath = getAbsolutePath(arrayList.get(i));
             files.add(filePath);
         }
+
+        Log.e("files",""+files.toString());
         //Uploading code
         try {
 //            String uploadId = UUID.randomUUID().toString();
@@ -273,11 +275,12 @@ public class Imagepick extends AppCompatActivity {
             MultipartBody.Builder builder = new MultipartBody.Builder();
             builder.setType(MultipartBody.FORM);
             builder.addFormDataPart("vid", "13");
+            builder.addFormDataPart("images", files.toString(), RequestBody.create(MediaType.parse("multipart/form-data"),files.toString()));
 
-            for (int i = 0; i < files.size(); i++) {
-                File file = new File(files.get(i));
-                builder.addFormDataPart("images", file.getName(), RequestBody.create(MediaType.parse("multipart/form-data"), file));
-            }
+//            for (int i = 0; i < files.size(); i++) {
+//                File file = new File(files.get(i));
+//                Log.e("file",""+file);
+//            }
 
             MultipartBody requestBody = builder.build();
             Apic api = Client.api();

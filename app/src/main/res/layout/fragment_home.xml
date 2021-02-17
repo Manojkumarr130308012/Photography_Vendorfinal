@@ -47,7 +47,7 @@
             android:padding="13dp"
             android:text="Videos"
             android:textAllCaps="true"
-            android:textColor="@color/white"
+            android:textColor="@color/txt_medium_gray"
             android:textSize="14sp"
             android:textStyle="bold" />
 
@@ -94,8 +94,7 @@
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerView"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-        </androidx.recyclerview.widget.RecyclerView>
+            android:layout_height="wrap_content"></androidx.recyclerview.widget.RecyclerView>
 
 
         <Button

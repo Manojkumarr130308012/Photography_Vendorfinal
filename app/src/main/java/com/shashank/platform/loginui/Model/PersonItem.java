@@ -2,15 +2,25 @@ package com.shashank.platform.loginui.Model;
 
 public class PersonItem {
     private String personName;
+    private String personid;
     private String photos;
     private String videos;
     private String amount;
 
-    public PersonItem(String personName, String photos, String videos, String amount) {
+    public PersonItem(String personName, String personid, String photos, String videos, String amount) {
         this.personName = personName;
+        this.personid = personid;
         this.photos = photos;
         this.videos = videos;
         this.amount = amount;
+    }
+
+    public String getPersonid() {
+        return personid;
+    }
+
+    public void setPersonid(String personid) {
+        this.personid = personid;
     }
 
     public String getPersonName() {

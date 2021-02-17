@@ -9,6 +9,8 @@ public class Api {
     public static final String Loginurl=Mainurl+"vendor_login";
 
     public static final String catgorurl=Mainurl+"category";
+    public static final String videosurl=Mainurl+"videos?vid=";
+    public static final String postvideourl=Mainurl+"vendor_video";
 
 
     public static final String postimageurl="https://shreejai.in/hc/api/vimg";

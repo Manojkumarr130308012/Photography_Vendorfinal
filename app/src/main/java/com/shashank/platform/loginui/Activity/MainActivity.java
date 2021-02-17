@@ -2,6 +2,7 @@ package com.shashank.platform.loginui.Activity;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -27,6 +28,7 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.gson.JsonObject;
 import com.shashank.platform.loginui.Api.Api;
+import com.shashank.platform.loginui.Config.DBHelper;
 import com.shashank.platform.loginui.R;
 
 import org.json.JSONArray;
@@ -54,7 +56,8 @@ public class MainActivity extends AppCompatActivity {
     String suburl;
     EditText username1,password1;
     ProgressBar pbar;
-    private static PostCommentResponseListener mPostCommentResponse;
+
+    DBHelper dbHelper;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -68,7 +71,7 @@ public class MainActivity extends AppCompatActivity {
         username1 = findViewById(R.id.editText);
         password1 = findViewById(R.id.editText2);
         pbar = (ProgressBar) findViewById(R.id.log_pbar);
-
+        dbHelper=new DBHelper(this);
         signin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -81,8 +84,8 @@ public class MainActivity extends AppCompatActivity {
                     Log.e("ffffffffffffffff",""+checkusername);
                     Log.e("ffffffffffffffff",""+checkpassword);
 
-                    postData(checkusername,checkpassword);
-                    pbar.setVisibility(View.VISIBLE);
+                    getLogin(checkusername,checkpassword);
+//                    pbar.setVisibility(View.VISIBLE);
                 }
 
             }
@@ -192,135 +195,79 @@ public class MainActivity extends AppCompatActivity {
 //
 //        }
 //    }
-    public void postData(String usernamestr, String passstr) {
-
-
-        String url =Api.Loginurl;
-
-//
-//        RequestQueue queue = Volley.newRequestQueue(this);
-//
-//
-//        StringRequest postRequest = new StringRequest(Request.Method.POST, url,
-//                new Response.Listener<String>()
-//                {
-//                    @Override
-//                    public void onResponse(String response) {
-//                        // response
-//                        Log.d("Response", response);
-//
-//                        JSONObject jsonobj = null;
-//                        try {
-//                            jsonobj = new JSONObject(response);
-//                            JSONObject jObject = jsonobj.getJSONObject("user");
-//                            message = (String) jsonobj.get("msg");
-////                            singleParsed = (String) jsonobj.get("status");
-////                            Storeuser = (String) jObject.get("username");
-////                            Storeid = (String) jObject.get("_id");
-////                            Storemob = (String) jObject.get("phone");
-//                        } catch (JSONException e) {
-//                            e.printStackTrace();
-//                        }
-//                        if(message.equals("Success")){
-//                            Intent i=new Intent(MainActivity.this,Bottommenu.class);
-//                            startActivity(i);
-//                            Toast.makeText(MainActivity.this, "Sucesss", Toast.LENGTH_SHORT).show();
-//
-//                        }else{
-//                            Toast.makeText(MainActivity.this, "Invalid Username And Password", Toast.LENGTH_SHORT).show();
-//                        }
-//
-//                    }
-//                },
-//                new Response.ErrorListener()
-//                {
-//                    @Override
-//                    public void onErrorResponse(VolleyError error) {
-//                        // error
-////                        Log.d("Error.Response", error);
-//                    }
-//                }
-//        ) {
-//            @Override
-//            protected Map<String, String> getParams()
-//            {
-//                Map<String, String>  params = new HashMap<String, String>();
-//                params.put("mobile", ""+checkusername);
-//                params.put("password", ""+checkpassword);
-//
-//                return params;
-//            }
-//        };
-//        queue.add(postRequest);
-//
-//
-//
 
 
 
-        message="";
+    private void getLogin(String usernamestr, String passstr) {
 
+        final ProgressDialog progressDialog = ProgressDialog.show(MainActivity.this,
+                "Please wait",
+                "Loading...");
 
-
-
-
-//        mPostCommentResponse.requestStarted();
-        RequestQueue queue = Volley.newRequestQueue(this);
-        StringRequest sr = new StringRequest(Request.Method.POST,url, new Response.Listener<String>() {
+        RequestQueue requestQueue= Volley.newRequestQueue(MainActivity.this);
+        String url = Api.Loginurl;
+        StringRequest stringRequest=new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
-//                mPostCommentResponse.requestCompleted();
+                //let's parse json data
+                try {
+                    JSONObject jsonObject = new JSONObject(response);
+                    JSONObject obj = jsonObject.getJSONObject("reg");
+                    String msg = obj.getString("msg");
+
+                    if (msg.equals("Success")) {
+
+                        String name = obj.getString("vendor_id");
+                        String mob = obj.getString("vendor_fname");
+                        String sts = obj.getString("vendor_mobile");
 
 
-                        JSONObject jsonobj = null;
-                        try {
-                            jsonobj = new JSONObject(response);
-                            JSONObject jObject = jsonobj.getJSONObject("reg");
-                            message = (String) jObject.get("msg");
-//                            singleParsed = (String) jsonobj.get("status");
-//                            Storeuser = (String) jObject.get("username");
-//                            Storeid = (String) jObject.get("_id");
-//                            Storemob = (String) jObject.get("phone");
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                        if(message.equals("Success")){
-                            Intent i=new Intent(MainActivity.this,Bottommenu.class);
-                            startActivity(i);
-                            Toast.makeText(MainActivity.this, "Sucesss", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(MainActivity.this, ""+msg, Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent(MainActivity.this, Plans.class);
+                        intent.putExtra("vendorid", ""+name);
+                        startActivity(intent);
+                        overridePendingTransition(R.anim.slide_in_right,R.anim.slide_from_right);
+                    } else {
+                        Toast.makeText(MainActivity.this, ""+msg, Toast.LENGTH_SHORT).show();
+                    }
 
-                        }else{
-                            Toast.makeText(MainActivity.this, "Invalid Username And Password", Toast.LENGTH_SHORT).show();
-                        }
+                    progressDialog.dismiss();
+                }
+                catch (Exception e){
+                    e.printStackTrace();
+                    progressDialog.dismiss();
+//                    Toast.makeText(ProfileActivity.this, "POST DATA : unable to Parse Json", Toast.LENGTH_SHORT).show();
+                }
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-//                mPostCommentResponse.requestEndedWithError(error);
+                progressDialog.dismiss();
+                Toast.makeText(MainActivity.this, "Post Data : Response Failed", Toast.LENGTH_SHORT).show();
             }
         }){
             @Override
             protected Map<String,String> getParams(){
-                Map<String,String> params = new HashMap<String, String>();
-                params.put("mobile", ""+checkusername);
-                params.put("password", ""+checkpassword);
-
+                Map<String,String> params=new HashMap<String, String>();
+                params.put("mobile", ""+usernamestr);
+                params.put("password", ""+passstr);
                 return params;
             }
 
             @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
-                Map<String,String> params = new HashMap<String, String>();
-                params.put("Content-Type","application/x-www-form-urlencoded");
+            public Map<String,String> getHeaders() throws AuthFailureError {
+                Map<String,String> params=new HashMap<String, String>();
+//                params.put("Content-Type","application/json;charset=utf-8");
+                params.put("Content-Type","application/x-www-form-urlencoded;charset=utf-8");
+//                params.put("Authorization","Bearer "+sToken);
+//                params.put("X-Requested-With", "XMLHttpRequest");
                 return params;
             }
         };
-        queue.add(sr);
+
+        requestQueue.add(stringRequest);
+
     }
 
-    public interface PostCommentResponseListener {
-        public void requestStarted();
-        public void requestCompleted();
-        public void requestEndedWithError(VolleyError error);
-    }
+
 }
