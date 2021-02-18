@@ -54,7 +54,7 @@ public class Image extends AppCompatActivity {
                             {
 //                                setUpPayment();
 //                        finish();
-                                deletevideo();
+                                deleteimage();
                             }
                         })
 
@@ -74,7 +74,7 @@ public class Image extends AppCompatActivity {
 
 
 
-    public void deletevideo(){
+    public void deleteimage(){
 
         String url= Api.delete_video;
         RequestQueue requestQueue;
@@ -129,7 +129,7 @@ public class Image extends AppCompatActivity {
             protected Map<String, String> getParams() {
                 // Posting parameters to login url
                 Map<String, String> params = new HashMap<>();
-                params.put("vidid", imgid);
+                params.put("imgid", imgid);
                 return params;
             }
 
