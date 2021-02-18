@@ -236,6 +236,7 @@ public class Register extends AppCompatActivity implements Validator.ValidationL
         getitem();
         getservice();
         getcatgory();
+
         loc.setOnItemSelectedListener(new MaterialSpinner.OnItemSelectedListener() {
 
             @Override
@@ -252,6 +253,7 @@ public class Register extends AppCompatActivity implements Validator.ValidationL
                 }
             }
         });
+
         category.setOnItemSelectedListener(new MaterialSpinner.OnItemSelectedListener() {
 
             @Override
@@ -997,7 +999,7 @@ public class Register extends AppCompatActivity implements Validator.ValidationL
                 // Printing uploading success message coming from server on android app.
                 Toast.makeText(Register.this, string1, Toast.LENGTH_LONG).show();
 
-                Intent intent = new Intent(Register.this, Plans.class);
+                Intent intent = new Intent(Register.this, MainActivity.class);
                 startActivity(intent);
 
                 // Setting image as transparent after done uploading.
@@ -1138,59 +1140,59 @@ public class Register extends AppCompatActivity implements Validator.ValidationL
 
 
 
-    public void postdata() {
-
-
-
-        RequestQueue requestQueue = Volley.newRequestQueue(this);
-        JSONObject object = new JSONObject();
-
-        try {
-            object.put("fname",""+firstnamestring);
-            object.put("lname",""+lastnamestring);
-            object.put("mobile",""+mobilestring);
-            object.put("whatsapp   ",""+watsappstring);
-            object.put("email",""+emailstring);
-            object.put("cname",""+companynamestring);
-            object.put("amount",""+amountstring);
-            object.put("dob",""+dobsting);
-            object.put("address",""+addressstring);
-            object.put("desc",""+descriptionstring);
-            object.put("location",""+location);
-            object.put("category",""+catg);
-            object.put("service",""+s);
-            object.put("password",""+passwordstring);
-            object.put("image",""+imagestring1);
-            object.put("proof",""+imagestring2);
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-
-        String url = Api.registerurl;
-
-        // Enter the correct url for your api service site
-
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, url, object,
-                new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-
-
-//                            message = (String) response.get("status");
-                            Log.e("xdddddddddddd", "" + response);
-
-                    }
-                }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Log.e("xddddd", "" + error);
-
-            }
-        });
-        requestQueue.add(jsonObjectRequest);
-
-
-    }
+//    public void postdata() {
+//
+//
+//
+//        RequestQueue requestQueue = Volley.newRequestQueue(this);
+//        JSONObject object = new JSONObject();
+//
+//        try {
+//            object.put("fname",""+firstnamestring);
+//            object.put("lname",""+lastnamestring);
+//            object.put("mobile",""+mobilestring);
+//            object.put("whatsapp   ",""+watsappstring);
+//            object.put("email",""+emailstring);
+//            object.put("cname",""+companynamestring);
+//            object.put("amount",""+amountstring);
+//            object.put("dob",""+dobsting);
+//            object.put("address",""+addressstring);
+//            object.put("desc",""+descriptionstring);
+//            object.put("location",""+location);
+//            object.put("category",""+catg);
+//            object.put("service",""+s);
+//            object.put("password",""+passwordstring);
+//            object.put("image",""+imagestring1);
+//            object.put("proof",""+imagestring2);
+//
+//        } catch (JSONException e) {
+//            e.printStackTrace();
+//        }
+//
+//
+//        String url = Api.registerurl;
+//
+//        // Enter the correct url for your api service site
+//
+//        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, url, object,
+//                new Response.Listener<JSONObject>() {
+//                    @Override
+//                    public void onResponse(JSONObject response) {
+//
+//
+////                            message = (String) response.get("status");
+//                            Log.e("xdddddddddddd", "" + response);
+//
+//                    }
+//                }, new Response.ErrorListener() {
+//            @Override
+//            public void onErrorResponse(VolleyError error) {
+//                Log.e("xddddd", "" + error);
+//
+//            }
+//        });
+//        requestQueue.add(jsonObjectRequest);
+//
+//
+//    }
 }

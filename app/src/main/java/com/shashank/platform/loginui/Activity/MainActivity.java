@@ -220,13 +220,22 @@ public class MainActivity extends AppCompatActivity {
                         String name = obj.getString("vendor_id");
                         String mob = obj.getString("vendor_fname");
                         String sts = obj.getString("vendor_mobile");
+                        String plan = obj.getString("vendor_plan");
 
+                        if (plan.equals("0")) {
+                            Toast.makeText(MainActivity.this, ""+msg, Toast.LENGTH_SHORT).show();
+                            Intent intent = new Intent(MainActivity.this, Plans.class);
+                            intent.putExtra("vendorid", ""+name);
+                            startActivity(intent);
+                            overridePendingTransition(R.anim.slide_in_right,R.anim.slide_from_right);
+                        }else{
+                            dbHelper.insertData(name,name);
+                            Toast.makeText(MainActivity.this, ""+msg, Toast.LENGTH_SHORT).show();
+                            Intent intent = new Intent(MainActivity.this, Bottommenu.class);
+                            startActivity(intent);
+                            overridePendingTransition(R.anim.slide_in_right,R.anim.slide_from_right);
+                        }
 
-                        Toast.makeText(MainActivity.this, ""+msg, Toast.LENGTH_SHORT).show();
-                        Intent intent = new Intent(MainActivity.this, Plans.class);
-                        intent.putExtra("vendorid", ""+name);
-                        startActivity(intent);
-                        overridePendingTransition(R.anim.slide_in_right,R.anim.slide_from_right);
                     } else {
                         Toast.makeText(MainActivity.this, ""+msg, Toast.LENGTH_SHORT).show();
                     }

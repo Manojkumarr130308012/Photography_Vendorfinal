@@ -1,16 +1,25 @@
 package com.shashank.platform.loginui.Activity;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.app.Activity;
+import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.Request;
@@ -18,7 +27,10 @@ import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.razorpay.Checkout;
+import com.razorpay.PaymentResultListener;
 import com.shashank.platform.loginui.Adapter.SingleCheckAdapter;
 import com.shashank.platform.loginui.Api.Api;
 import com.shashank.platform.loginui.Config.DBHelper;
@@ -30,15 +42,18 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-public class Plans extends AppCompatActivity implements AdapterView.OnItemClickListener{
+public class Plans extends AppCompatActivity implements AdapterView.OnItemClickListener, PaymentResultListener {
 
     RecyclerView mRecyclerView;
-
+    ProgressDialog progressDialog;
     private List<PersonItem> mSingleCheckList = new ArrayList<>();
     private SingleCheckAdapter mAdapter;
     String planid;
+    String planamount;
     Button choose;
     DBHelper dbHelper;
     String vendorid;
@@ -55,9 +70,9 @@ public class Plans extends AppCompatActivity implements AdapterView.OnItemClickL
         choose.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                dbHelper.insertData(vendorid,planid);
-                Intent i=new Intent(Plans.this,Bottommenu.class);
-                startActivity(i);
+
+                setUpPayment();
+
             }
         });
         getplans();
@@ -119,7 +134,144 @@ public class Plans extends AppCompatActivity implements AdapterView.OnItemClickL
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         Toast.makeText(getApplicationContext(), position + " - " + mSingleCheckList.get(position).getPersonName(), Toast.LENGTH_SHORT).show();
-        planid=""+mSingleCheckList.get(position).getPersonName();
+        planid=""+mSingleCheckList.get(position).getPersonid();
+        planamount=""+mSingleCheckList.get(position).getAmount();
+        AlertDialog alertDialog = new AlertDialog.Builder(this)
+                .setIcon(android.R.drawable.ic_dialog_alert)
+                .setTitle("Plan Choose")
+                .setMessage("Are you sure!")
+                .setPositiveButton("Yes", new DialogInterface.OnClickListener()
+                {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i)
+                    {
+                        setUpPayment();
+//                        finish();
+                    }
+                })
 
+                .setNegativeButton("Cancel", new DialogInterface.OnClickListener()
+                {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i)
+                    {
+                        Toast.makeText(getApplicationContext(),"Nothing Happened",Toast.LENGTH_LONG).show();
+                    }
+                }).show();
+    }
+
+
+    private void setUpPayment() {
+
+
+
+        final Activity activity = this;
+        final Checkout checkout = new Checkout();
+
+        JSONObject object = new JSONObject();
+        String amtOnline = ""+planamount;
+        int amt = Integer.parseInt(amtOnline) * 100;
+        try {
+            object.put("name", "Razorpay Corp");
+            object.put("description", "Demoing Charges");
+            //You can omit the image option to fetch the image from dashboard
+            object.put("image", "https://s3.amazonaws.com/rzp-mobile/images/rzp.png");
+            object.put("currency", "INR");
+            object.put("amount", ""+amt);
+
+            JSONObject preFill = new JSONObject();
+//            preFill.put("email", ""+eemail);
+//            preFill.put("contact", ""+emob);
+
+            object.put("prefill", preFill);
+
+            checkout.open(activity,object);
+
+        } catch (JSONException e) {
+//            Toast.makeText(activity, "Exception :"+e.getMessage(), Toast.LENGTH_SHORT).show();
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void onPaymentSuccess(String razorPayId) {
+
+//        new ActivityReservation2.sendData().execute();
+        // Tag used to cancel the request
+        String tag_string_req = "req_signup";
+        progressDialog.setMessage("Loading...");
+        progressDialog.show();
+
+         String url=Api.planpayamounturl;
+        RequestQueue requestQueue;
+        requestQueue = Volley.newRequestQueue(getApplicationContext());
+
+        StringRequest strReq = new StringRequest(Request.Method.POST,
+                url, new Response.Listener<String>() {
+
+            @Override
+            public void onResponse(String response) {
+//                Log.d(TAG, "Register Response: " + response.toString());
+
+                try {
+                    JSONObject jObj = new JSONObject(response);
+                    boolean error = jObj.getBoolean("error");
+
+                    // Check for error node in json
+                    if (!error) {
+
+                        Toast toast = Toast.makeText(Plans.this, "Your Booking Successfully...", Toast.LENGTH_LONG);
+
+                        toast.show();
+                        dbHelper.insertData(vendorid,planid);
+                        Intent i=new Intent(Plans.this,Bottommenu.class);
+                        startActivity(i);
+                    } else {
+                        // Error in login. Get the error message
+                        String errorMsg = jObj.getString("error_msg");
+
+                        Toast.makeText(Plans.this, ""+errorMsg, Toast.LENGTH_SHORT).show();
+                    }
+                } catch (JSONException e) {
+                    // JSON error
+                    e.printStackTrace();
+//                    toast("Json error: " + e.getMessage());
+                    Toast.makeText(Plans.this, ""+e.getMessage(), Toast.LENGTH_SHORT).show();
+
+                }
+
+            }
+        }, new Response.ErrorListener() {
+
+            @Override
+            public void onErrorResponse(VolleyError error) {
+//                Log.e(TAG, "Login Error: " + error.getMessage());
+                Toast.makeText(Plans.this, "Unknown Error occurred", Toast.LENGTH_SHORT).show();
+                progressDialog.hide();
+            }
+        }) {
+
+            @Override
+            protected Map<String, String> getParams() {
+                // Posting parameters to login url
+                Map<String, String> params = new HashMap<>();
+                params.put("pid", planid);
+                params.put("vid", vendorid);
+                params.put("payid", razorPayId);
+
+
+                return params;
+            }
+
+        };
+
+        // Adding request to request queue
+        requestQueue.add(strReq);
+
+    }
+
+    @Override
+    public void onPaymentError(int i, String s) {
+        Toast.makeText(this, "Payment Failled", Toast.LENGTH_SHORT).show();
     }
 }

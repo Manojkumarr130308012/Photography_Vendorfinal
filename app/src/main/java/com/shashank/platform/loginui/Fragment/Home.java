@@ -7,6 +7,7 @@ import android.content.ClipboardManager;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -52,6 +53,7 @@ import com.shashank.platform.loginui.Activity.Register;
 import com.shashank.platform.loginui.Adapter.CustomGalleryAdapter;
 import com.shashank.platform.loginui.Adapter.YoutubeRecyclerAdapter;
 import com.shashank.platform.loginui.Api.Api;
+import com.shashank.platform.loginui.Config.DBHelper;
 import com.shashank.platform.loginui.Model.YoutubeVideo;
 import com.shashank.platform.loginui.R;
 import com.shashank.platform.loginui.Util.VideoAdapter;
@@ -63,6 +65,7 @@ import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.lang.reflect.Array;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
@@ -94,10 +97,10 @@ View view;
     Button addphoto;
     Button upload;
     // array of images
-    int[] images = {R.drawable.ic_launcher_background, R.drawable.ic_launcher_background, R.drawable.ic_launcher_background, R.drawable.ic_launcher_background, R.drawable.ic_launcher_background,
-            R.drawable.ic_launcher_background, R.drawable.ic_launcher_background, R.drawable.ic_launcher_background, R.drawable.ic_launcher_background, R.drawable.ic_launcher_background, R.drawable.ic_launcher_background,
-            R.drawable.ic_launcher_background, R.drawable.ic_launcher_background};
-
+    String[] images;
+    String[] imagesid;
+    DBHelper dbHelper;
+    String id,na,pa;
     private static final int INTENT_REQUEST_GET_IMAGES = 13;
     static final int OPEN_MEDIA_PICKER = 1;
     
@@ -123,7 +126,14 @@ View view;
         digitalsbtn = view.findViewById(R.id.Bussinessbtn);
         addphoto = view.findViewById(R.id.addphoto);
         upload = view.findViewById(R.id.upload);
+        dbHelper=new DBHelper(getActivity());
+        Cursor res = dbHelper.getAllData();
 
+        while (res.moveToNext()) {
+            id = res.getString(0);
+            na = res.getString(1);
+            pa = res.getString(2);
+        }
         if (ContextCompat.checkSelfPermission(getActivity(),
                 Manifest.permission.READ_EXTERNAL_STORAGE)
                 != PackageManager.PERMISSION_GRANTED) {
@@ -193,7 +203,7 @@ View view;
                                         // send data from the
                                         // AlertDialog to the Activity
                                         postvideos(editText.getText().toString());
-                                        new Home.ReadJSON().execute(Api.videosurl+"13");
+                                        new Home.ReadJSON().execute(Api.videosurl+""+na);
                                     }
                                 });
 
@@ -236,15 +246,15 @@ View view;
 
         simpleGrid =view.findViewById(R.id.simpleGridView); // init GridView
         // Create an object of CustomAdapter and set Adapter to GirdView
-        CustomGalleryAdapter customAdapter = new CustomGalleryAdapter(getActivity(), images);
-        simpleGrid.setAdapter(customAdapter);
+
         // implement setOnItemClickListener event on GridView
         simpleGrid.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 // set an Intent to Another Activity
                 Intent intent = new Intent(getActivity(), Image.class);
-                intent.putExtra("image", images[position]); // put image data in Intent
+                intent.putExtra("image", imagesid[position]); // put image data in Intent
+                intent.putExtra("imageid", images[position]); // put image data in Intent
                 startActivity(intent); // start Intent
             }
         });
@@ -258,7 +268,8 @@ View view;
         getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                new Home.ReadJSON().execute(Api.videosurl+"13");
+                new Home.ReadJSON().execute(Api.videosurl+""+na);
+                new Home.ReadJSON1().execute(Api.imagsurl+""+na);
             }
         });
         return view;
@@ -354,14 +365,68 @@ View view;
                 e.printStackTrace();
 //                custPrograssbar.closePrograssBar();
             }
-            mRecyclerAdapter = new YoutubeRecyclerAdapter(videoArrayList);
-            RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getActivity());
-            recyclerView.setLayoutManager(mLayoutManager);
-            recyclerView.setItemAnimator(new DefaultItemAnimator());
-            recyclerView.setAdapter(mRecyclerAdapter);
+
+
+            if (getActivity()!=null) {
+                //set layout manager and adapter for "GridView"
+                mRecyclerAdapter = new YoutubeRecyclerAdapter(videoArrayList);
+                RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getActivity());
+                recyclerView.setLayoutManager(mLayoutManager);
+                recyclerView.setItemAnimator(new DefaultItemAnimator());
+                recyclerView.setAdapter(mRecyclerAdapter);
+
+            }
+
         }
     }
+    class ReadJSON1 extends AsyncTask<String, Integer, String> {
+        ArrayList<YoutubeVideo> videoArrayList=new ArrayList<>();
+        @Override
+        protected String doInBackground(String... params) {
+            return readURL(params[0]);
+        }
 
+        @Override
+        protected void onPreExecute() {
+
+        }
+
+        @Override
+        protected void onPostExecute(String content) {
+            try {
+                JSONObject jsonObject = new JSONObject(content);
+                JSONArray jsonArray =  jsonObject.getJSONArray("images");
+                images=new String[jsonArray.length()];
+                imagesid=new String[jsonArray.length()];
+
+                for(int i =0;i<jsonArray.length(); i++){
+                    JSONObject productObject = jsonArray.getJSONObject(i);
+
+                    YoutubeVideo video1 = new YoutubeVideo();
+                   String imgid=""+productObject.getString("image_id");
+                    String imagtrl=""+productObject.getString("image_src");
+
+                    images[i]=productObject.getString("image_id");
+                    imagesid[i]=productObject.getString("image_src");
+
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+//                custPrograssbar.closePrograssBar();
+            }
+            Log.e("images",""+images);
+            Log.e("image_id",""+imagesid);
+
+
+            if (getActivity()!=null) {
+                //set layout manager and adapter for "GridView"
+                CustomGalleryAdapter customAdapter = new CustomGalleryAdapter(getActivity(), images,imagesid);
+                simpleGrid.setAdapter(customAdapter);
+
+            }
+
+        }
+    }
 
     private static String readURL(String theUrl) {
         StringBuilder content = new StringBuilder();
@@ -412,7 +477,7 @@ View view;
             @Override
             protected Map<String,String> getParams(){
                 Map<String,String> params=new HashMap<String, String>();
-                params.put("vid", "13");
+                params.put("vid", ""+na);
                 params.put("video", ""+videourl);
                 return params;
             }

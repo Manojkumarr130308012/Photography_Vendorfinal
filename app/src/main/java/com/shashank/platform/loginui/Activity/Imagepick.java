@@ -34,6 +34,7 @@ import com.shashank.platform.loginui.Api.ApiService;
 
 import com.shashank.platform.loginui.Api.Apic;
 import com.shashank.platform.loginui.Api.Client;
+import com.shashank.platform.loginui.Config.DBHelper;
 import com.shashank.platform.loginui.Util.FileUtils;
 import com.shashank.platform.loginui.Util.InternetConnection;
 import com.shashank.platform.loginui.Util.PhtotAdapter;
@@ -84,6 +85,8 @@ public class Imagepick extends AppCompatActivity {
     private static final String TAG = Imagepick.class.getSimpleName();
     boolean check = true;
     String ConvertImage;
+    DBHelper dbHelper;
+    String id,na,pa;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -92,7 +95,17 @@ public class Imagepick extends AppCompatActivity {
         btnSelectImage=findViewById(R.id.sel_image);
         rcvPhoto=findViewById(R.id.rcv_photo);
         photoAdapter=new PhtotAdapter(this);
+        dbHelper=new DBHelper(this);
+        Cursor res = dbHelper.getAllData();
 
+        while (res.moveToNext()) {
+            id = res.getString(0);
+            na = res.getString(1);
+            pa = res.getString(2);
+        }
+
+
+        Log.e("dddddddddddd",""+na);
         GridLayoutManager gridLayoutManager=new GridLayoutManager(this,2);
         rcvPhoto.setLayoutManager(gridLayoutManager);
         rcvPhoto.setAdapter(photoAdapter);
@@ -172,7 +185,7 @@ public class Imagepick extends AppCompatActivity {
             }
 
             // create a map of data to pass along
-            RequestBody description = createPartFromString("www.androidlearning.com");
+            RequestBody description = createPartFromString(""+na);
             RequestBody size = createPartFromString(""+parts.size());
 
             // finally, execute the request
@@ -185,6 +198,8 @@ public class Imagepick extends AppCompatActivity {
                     if(response.isSuccessful()) {
                         Toast.makeText(Imagepick.this,
                                 "Images successfully uploaded!", Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent(Imagepick.this, Bottommenu.class);
+                        startActivity(intent);
                     } else {
                         Snackbar.make(findViewById(android.R.id.content),
                                 R.string.string_some_thing_wrong, Snackbar.LENGTH_LONG).show();
@@ -256,7 +271,7 @@ public class Imagepick extends AppCompatActivity {
     }
 
 
-
+/*
     public void uploadMultipart() {
         //getting name for the image
 
@@ -303,8 +318,9 @@ public class Imagepick extends AppCompatActivity {
         } catch (Exception exc) {
             Toast.makeText(this, exc.getMessage(), Toast.LENGTH_SHORT).show();
         }
-    }
+    }*/
 
+/*
     public String getPath(Uri uri) {
         Cursor cursor = getContentResolver().query(uri, null, null, null, null);
         cursor.moveToFirst();
@@ -321,6 +337,7 @@ public class Imagepick extends AppCompatActivity {
 
         return path;
     }
+*/
 
 
 
@@ -331,17 +348,18 @@ public class Imagepick extends AppCompatActivity {
 
 
 
-    private String getAbsolutePath(Uri uri) {
+ /*   private String getAbsolutePath(Uri uri) {
         String path = null;
         path = RealPathUtils.getRealPath(this, uri);
         return path;
     }
 
+*/
 
 
 
 
-
+/*
     public void ImageUploadToServerFunction() {
 
 
@@ -403,6 +421,7 @@ public class Imagepick extends AppCompatActivity {
 
         AsyncTaskUploadClassOBJ.execute();
     }
+*/
 
     public class ImageProcessClass {
 

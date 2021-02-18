@@ -18,13 +18,13 @@ import retrofit2.http.Part;
  */
 
 public interface ApiService {
-    String BASE_URL = "https://astrsmartcity.com/myprojects/ImageUpload/";
+    String BASE_URL = "https://demo.njcreators.in/hc/api/";
 
 
     @Multipart
-    @POST("multi_image_upload.php")
+    @POST("vimg")
     Call<ResponseBody> uploadMultiple(
-            @Part("description") RequestBody description,
+            @Part("vid") RequestBody description,
             @Part("size") RequestBody size,
             @Part List<MultipartBody.Part> files);
 }

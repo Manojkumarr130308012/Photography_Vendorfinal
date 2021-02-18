@@ -65,6 +65,8 @@ public class YoutubeRecyclerAdapter extends RecyclerView.Adapter<BaseViewHolder>
     public class ViewHolder extends BaseViewHolder {
         @BindView(R.id.textViewTitle)
         TextView textWaveTitle;
+        @BindView(R.id.delbtnPlay)
+        ImageView delbtnPlayButton;
         @BindView(R.id.btnPlay)
         ImageView playButton;
         @BindView(R.id.youtube_view)
@@ -85,7 +87,7 @@ public class YoutubeRecyclerAdapter extends RecyclerView.Adapter<BaseViewHolder>
 
 
             playButton.setVisibility(View.VISIBLE);
-
+            delbtnPlayButton.setVisibility(View.GONE);
             youTubePlayerView.setVisibility(View.VISIBLE);
             youTubePlayerView.addYouTubePlayerListener(new AbstractYouTubePlayerListener() {
                 @Override
@@ -100,6 +102,7 @@ public class YoutubeRecyclerAdapter extends RecyclerView.Adapter<BaseViewHolder>
 
                 Intent intent=new Intent(view.getContext(), FullScreen.class);
                 intent.putExtra("video_url",mYoutubeVideo.getVideoId());
+                intent.putExtra("video_id",mYoutubeVideo.getId());
                 view.getContext().startActivity(intent);
 
             });
