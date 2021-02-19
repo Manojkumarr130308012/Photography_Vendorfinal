@@ -71,7 +71,7 @@ public class Plans extends AppCompatActivity implements AdapterView.OnItemClickL
             @Override
             public void onClick(View view) {
 
-                setUpPayment();
+                startPayment();
 
             }
         });
@@ -145,7 +145,7 @@ public class Plans extends AppCompatActivity implements AdapterView.OnItemClickL
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i)
                     {
-                        setUpPayment();
+                        startPayment();
 //                        finish();
                     }
                 })
@@ -161,6 +161,7 @@ public class Plans extends AppCompatActivity implements AdapterView.OnItemClickL
     }
 
 
+/*
     private void setUpPayment() {
 
 
@@ -202,7 +203,8 @@ public class Plans extends AppCompatActivity implements AdapterView.OnItemClickL
         progressDialog.setMessage("Loading...");
         progressDialog.show();
 
-         String url=Api.planpayamounturl;
+     */
+/*    String url=Api.planpayamounturl;
         RequestQueue requestQueue;
         requestQueue = Volley.newRequestQueue(getApplicationContext());
 
@@ -266,12 +268,129 @@ public class Plans extends AppCompatActivity implements AdapterView.OnItemClickL
         };
 
         // Adding request to request queue
-        requestQueue.add(strReq);
+        requestQueue.add(strReq);*//*
+
 
     }
 
     @Override
     public void onPaymentError(int i, String s) {
         Toast.makeText(this, "Payment Failled", Toast.LENGTH_SHORT).show();
+    }
+*/
+
+
+
+    public void startPayment() {
+        /**
+         * You need to pass current activity in order to let Razorpay create CheckoutActivity
+         */
+        final Activity activity = this;
+        final Checkout co = new Checkout();
+        try {
+            JSONObject options = new JSONObject();
+            options.put("name", "BlueApp Software");
+            options.put("description", "App Payment");
+            //You can omit the image option to fetch the image from dashboard
+            options.put("image", "https://rzp-mobile.s3.amazonaws.com/images/rzp.png");
+            options.put("currency", "INR");
+            String payment = planamount;
+            // amount is in paise so please multiple it by 100
+            //Payment failed Invalid amount (should be passed in integer paise. Minimum value is 100 paise, i.e. ₹ 1)
+            double total = Double.parseDouble(payment);
+            total = total * 100;
+            options.put("amount", total);
+            JSONObject preFill = new JSONObject();
+            preFill.put("email", "kamal.bunkar07@gmail.com");
+            preFill.put("contact", "9144040888");
+            options.put("prefill", preFill);
+            co.open(activity, options);
+        } catch (Exception e) {
+            Toast.makeText(activity, "Error in payment: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+            e.printStackTrace();
+        }
+    }
+    @Override
+    public void onPaymentSuccess(String s) {
+        // payment successfull pay_DGU19rDsInjcF2
+//        Log.e(TAG, " payment successfull "+ s.toString());
+
+            String url=Api.planpayamounturl;
+        RequestQueue requestQueue;
+        requestQueue = Volley.newRequestQueue(getApplicationContext());
+
+        StringRequest strReq = new StringRequest(Request.Method.POST,
+                url, new Response.Listener<String>() {
+
+            @Override
+            public void onResponse(String response) {
+//                Log.d(TAG, "Register Response: " + response.toString());
+
+                try {
+                    JSONObject jObj = new JSONObject(response);
+                    boolean error = jObj.getBoolean("error");
+
+                    // Check for error node in json
+                    if (!error) {
+
+                        Toast toast = Toast.makeText(Plans.this, "Your Booking Successfully...", Toast.LENGTH_LONG);
+
+                        toast.show();
+                        dbHelper.insertData(vendorid,planid);
+                        Intent i=new Intent(Plans.this,Bottommenu.class);
+                        startActivity(i);
+                    } else {
+                        // Error in login. Get the error message
+                        String errorMsg = jObj.getString("error_msg");
+
+                        Toast.makeText(Plans.this, ""+errorMsg, Toast.LENGTH_SHORT).show();
+                    }
+                } catch (JSONException e) {
+                    // JSON error
+                    e.printStackTrace();
+//                    toast("Json error: " + e.getMessage());
+                    Toast.makeText(Plans.this, ""+e.getMessage(), Toast.LENGTH_SHORT).show();
+
+                }
+
+            }
+        }, new Response.ErrorListener() {
+
+            @Override
+            public void onErrorResponse(VolleyError error) {
+//                Log.e(TAG, "Login Error: " + error.getMessage());
+                Toast.makeText(Plans.this, "Unknown Error occurred", Toast.LENGTH_SHORT).show();
+                progressDialog.hide();
+            }
+        }) {
+
+            @Override
+            protected Map<String, String> getParams() {
+                // Posting parameters to login url
+                Map<String, String> params = new HashMap<>();
+                params.put("pid", planid);
+                params.put("vid", vendorid);
+                params.put("payid", s);
+
+
+                return params;
+            }
+
+        };
+
+        // Adding request to request queue
+        requestQueue.add(strReq);
+        Intent i=new Intent(Plans.this,Bottommenu.class);
+        startActivity(i);
+        Toast.makeText(this, "Payment successfully done! " +s, Toast.LENGTH_SHORT).show();
+    }
+    @Override
+    public void onPaymentError(int i, String s) {
+//        Log.e(TAG,  "error code "+String.valueOf(i)+" -- Payment failed "+s.toString()  );
+        try {
+            Toast.makeText(this, "Payment error please try again", Toast.LENGTH_SHORT).show();
+        } catch (Exception e) {
+            Log.e("OnPaymentError", "Exception in onPaymentError", e);
+        }
     }
 }

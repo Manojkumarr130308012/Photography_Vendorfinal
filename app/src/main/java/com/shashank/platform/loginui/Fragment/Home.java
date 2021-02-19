@@ -97,8 +97,8 @@ View view;
     Button addphoto;
     Button upload;
     // array of images
-    String[] images;
-    String[] imagesid;
+    String[] images=new String[0];
+    String[] imagesid=new String[0];
     DBHelper dbHelper;
     String id,na,pa;
     private static final int INTENT_REQUEST_GET_IMAGES = 13;
@@ -142,21 +142,17 @@ View view;
             if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(),
                     Manifest.permission.READ_EXTERNAL_STORAGE)) {
 
-                // Show an expanation to the user *asynchronously* -- don't block
-                // this thread waiting for the user's response! After the user
-                // sees the explanation, try again to request the permission.
+
 
             } else {
 
-                // No explanation needed, we can request the permission.
+
 
                 ActivityCompat.requestPermissions(getActivity(),
                         new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
                         1);
 
-                // MY_PERMISSIONS_REQUEST_READ_CONTACTS is an
-                // app-defined int constant. The callback method gets the
-                // result of the request.
+
             }
         }
 
@@ -361,21 +357,26 @@ View view;
 
 
                 }
+                if (getActivity()!=null) {
+                    //set layout manager and adapter for "GridView"
+
+                    mRecyclerAdapter = new YoutubeRecyclerAdapter(videoArrayList);
+                    RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getActivity());
+                    recyclerView.setLayoutManager(mLayoutManager);
+                    recyclerView.setItemAnimator(new DefaultItemAnimator());
+                    recyclerView.setAdapter(mRecyclerAdapter);
+
+
+
+                }
+
             } catch (JSONException e) {
                 e.printStackTrace();
 //                custPrograssbar.closePrograssBar();
             }
 
 
-            if (getActivity()!=null) {
-                //set layout manager and adapter for "GridView"
-                mRecyclerAdapter = new YoutubeRecyclerAdapter(videoArrayList);
-                RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getActivity());
-                recyclerView.setLayoutManager(mLayoutManager);
-                recyclerView.setItemAnimator(new DefaultItemAnimator());
-                recyclerView.setAdapter(mRecyclerAdapter);
 
-            }
 
         }
     }
@@ -410,6 +411,16 @@ View view;
                     imagesid[i]=productObject.getString("image_src");
 
                 }
+
+                if (getActivity()!=null) {
+                    //set layout manager and adapter for "GridView"
+
+                    CustomGalleryAdapter customAdapter = new CustomGalleryAdapter(getActivity(), images,imagesid);
+                    simpleGrid.setAdapter(customAdapter);
+
+
+
+                }
             } catch (JSONException e) {
                 e.printStackTrace();
 //                custPrograssbar.closePrograssBar();
@@ -418,12 +429,7 @@ View view;
             Log.e("image_id",""+imagesid);
 
 
-            if (getActivity()!=null) {
-                //set layout manager and adapter for "GridView"
-                CustomGalleryAdapter customAdapter = new CustomGalleryAdapter(getActivity(), images,imagesid);
-                simpleGrid.setAdapter(customAdapter);
 
-            }
 
         }
     }

@@ -229,7 +229,7 @@ public class MainActivity extends AppCompatActivity {
                             startActivity(intent);
                             overridePendingTransition(R.anim.slide_in_right,R.anim.slide_from_right);
                         }else{
-                            dbHelper.insertData(name,name);
+                            dbHelper.insertData(name,plan);
                             Toast.makeText(MainActivity.this, ""+msg, Toast.LENGTH_SHORT).show();
                             Intent intent = new Intent(MainActivity.this, Bottommenu.class);
                             startActivity(intent);

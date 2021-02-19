@@ -183,7 +183,7 @@ public class Imagepick extends AppCompatActivity {
                     parts.add(prepareFilePart("image"+i, arrayList.get(i)));
                 }
             }
-
+Log.e("ffff",""+na);
             // create a map of data to pass along
             RequestBody description = createPartFromString(""+na);
             RequestBody size = createPartFromString(""+parts.size());
