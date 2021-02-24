@@ -3,6 +3,7 @@ package com.shashank.platform.loginui.Activity;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
@@ -12,6 +13,7 @@ import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -22,6 +24,7 @@ import com.pierfrancescosoffritti.youtubeplayer.player.AbstractYouTubePlayerList
 import com.pierfrancescosoffritti.youtubeplayer.player.YouTubePlayerView;
 import com.shashank.platform.loginui.Api.Api;
 import com.shashank.platform.loginui.Config.DBHelper;
+import com.shashank.platform.loginui.Fragment.Home;
 import com.shashank.platform.loginui.R;
 
 import org.json.JSONException;
@@ -61,7 +64,7 @@ public class FullScreen extends AppCompatActivity {
         delbtnPlay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                AlertDialog alertDialog = new AlertDialog.Builder(getApplicationContext())
+                AlertDialog alertDialog = new AlertDialog.Builder(FullScreen.this)
                         .setIcon(android.R.drawable.ic_dialog_alert)
                         .setTitle("Delete Video")
                         .setMessage("Are you sure!")
@@ -73,6 +76,7 @@ public class FullScreen extends AppCompatActivity {
 //                                setUpPayment();
 //                        finish();
                                 deletevideo();
+
                             }
                         })
 
@@ -81,7 +85,7 @@ public class FullScreen extends AppCompatActivity {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i)
                             {
-                                Toast.makeText(getApplicationContext(),"Nothing Happened",Toast.LENGTH_LONG).show();
+                                Toast.makeText(FullScreen.this,"Nothing Happened",Toast.LENGTH_LONG).show();
                             }
                         }).show();
             }
@@ -100,66 +104,65 @@ public class FullScreen extends AppCompatActivity {
 
     public void deletevideo(){
 
-        String url= Api.delete_video;
-        RequestQueue requestQueue;
-        requestQueue = Volley.newRequestQueue(getApplicationContext());
+        final ProgressDialog progressDialog = ProgressDialog.show(FullScreen.this,
+                "Please wait",
+                "Loading...");
 
-        StringRequest strReq = new StringRequest(Request.Method.POST,
-                url, new Response.Listener<String>() {
-
+        RequestQueue requestQueue= Volley.newRequestQueue(FullScreen.this);
+        String url = Api.delete_video;
+        StringRequest stringRequest=new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
-//                Log.d(TAG, "Register Response: " + response.toString());
-
+                //let's parse json data
                 try {
-                    JSONObject jObj = new JSONObject(response);
-                    boolean error = jObj.getBoolean("error");
+                    JSONObject jsonObject = new JSONObject(response);
+                    JSONObject obj = jsonObject.getJSONObject("reg");
+                    String msg = obj.getString("msg");
 
-                    // Check for error node in json
-                    if (!error) {
+                    if (msg.equals("Success")) {
 
-                        Toast toast = Toast.makeText(FullScreen.this, "Your Video Deleted Successfully...", Toast.LENGTH_LONG);
+                        Toast.makeText(FullScreen.this, ""+msg, Toast.LENGTH_SHORT).show();
+                        Intent in=new Intent(getApplicationContext(), Bottommenu.class);
+                        startActivity(in);
 
-                        toast.show();
-
-                        Intent i=new Intent(FullScreen.this,Bottommenu.class);
-                        startActivity(i);
                     } else {
-                        // Error in login. Get the error message
-                        String errorMsg = jObj.getString("error_msg");
-
-                        Toast.makeText(FullScreen.this, ""+errorMsg, Toast.LENGTH_SHORT).show();
+                        Toast.makeText(FullScreen.this, ""+msg, Toast.LENGTH_SHORT).show();
                     }
-                } catch (JSONException e) {
-                    // JSON error
-                    e.printStackTrace();
-//                    toast("Json error: " + e.getMessage());
-                    Toast.makeText(FullScreen.this, ""+e.getMessage(), Toast.LENGTH_SHORT).show();
 
+                    progressDialog.dismiss();
                 }
-
+                catch (Exception e){
+                    e.printStackTrace();
+                    progressDialog.dismiss();
+//                    Toast.makeText(ProfileActivity.this, "POST DATA : unable to Parse Json", Toast.LENGTH_SHORT).show();
+                }
             }
         }, new Response.ErrorListener() {
-
             @Override
             public void onErrorResponse(VolleyError error) {
-//                Log.e(TAG, "Login Error: " + error.getMessage());
-                Toast.makeText(FullScreen.this, "Unknown Error occurred", Toast.LENGTH_SHORT).show();
-//                progressDialog.hide();
+                progressDialog.dismiss();
+                Toast.makeText(FullScreen.this, "Post Data : Response Failed", Toast.LENGTH_SHORT).show();
             }
-        }) {
-
+        }){
             @Override
-            protected Map<String, String> getParams() {
-                // Posting parameters to login url
-                Map<String, String> params = new HashMap<>();
-                params.put("vidid", vid);
+            protected Map<String,String> getParams(){
+                Map<String,String> params=new HashMap<String, String>();
+                params.put("vidid", ""+vid);
+
                 return params;
             }
 
+            @Override
+            public Map<String,String> getHeaders() throws AuthFailureError {
+                Map<String,String> params=new HashMap<String, String>();
+//                params.put("Content-Type","application/json;charset=utf-8");
+                params.put("Content-Type","application/x-www-form-urlencoded;charset=utf-8");
+//                params.put("Authorization","Bearer "+sToken);
+//                params.put("X-Requested-With", "XMLHttpRequest");
+                return params;
+            }
         };
 
-        // Adding request to request queue
-        requestQueue.add(strReq);
+        requestQueue.add(stringRequest);
     }
 }

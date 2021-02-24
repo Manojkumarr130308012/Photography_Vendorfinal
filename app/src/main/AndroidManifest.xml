@@ -28,8 +28,10 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".Activity.Editprofile"
-            android:theme="@style/noAppTheme"></activity>
+        <activity android:name=".Activity.Planupgrade"></activity>
+        <activity
+            android:name=".Activity.Editprofile"
+            android:theme="@style/noAppTheme" />
         <activity
             android:name=".Activity.FullScreen"
             android:screenOrientation="landscape"
@@ -52,7 +54,8 @@
             android:configChanges="orientation|screenSize"
             android:theme="@style/noAppTheme"
             android:windowSoftInputMode="stateHidden|adjustPan" />
-        <activity android:name=".Activity.Image" />
+        <activity android:name=".Activity.Image"
+            android:theme="@style/AppTheme.NoActionBar"/>
         <activity android:name=".Activity.Bottommenu">
 
             <!-- <intent-filter> -->

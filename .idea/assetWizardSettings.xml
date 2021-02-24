@@ -18,7 +18,7 @@
                                 <PersistentState>
                                   <option name="values">
                                     <map>
-                                      <entry key="url" value="file:/$PROJECT_DIR$/../Androidsdkfolder/icons/material/materialicons/upgrade/baseline_upgrade_24.xml" />
+                                      <entry key="url" value="file:/F:/Androidsdkfolder/icons/material/materialicons/phone_forwarded/baseline_phone_forwarded_24.xml" />
                                     </map>
                                   </option>
                                 </PersistentState>
@@ -29,7 +29,7 @@
                         <option name="values">
                           <map>
                             <entry key="color" value="0f88b8" />
-                            <entry key="outputName" value="ic_baseline_upgrade" />
+                            <entry key="outputName" value="telephone" />
                             <entry key="sourceFile" value="C:\Users\new\Desktop\LoginUI-Android-master" />
                           </map>
                         </option>

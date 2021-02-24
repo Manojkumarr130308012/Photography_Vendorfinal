@@ -10,9 +10,6 @@ public class CustomerData {
     @PrimaryKey(autoGenerate = true)
     private int autoid;
 
-    @ColumnInfo(name = "CustomerID")
-    private String CustomerID;
-
     @ColumnInfo(name = "Customername")
     private String Customername;
 
@@ -34,13 +31,6 @@ public class CustomerData {
         this.autoid = autoid;
     }
 
-    public String getCustomerID() {
-        return CustomerID;
-    }
-
-    public void setCustomerID(String customerID) {
-        CustomerID = customerID;
-    }
 
     public String getCustomername() {
         return Customername;

@@ -74,7 +74,7 @@ import com.mobsandgeeks.saripaar.annotation.Length;
 import com.mobsandgeeks.saripaar.annotation.NotEmpty;
 import com.mobsandgeeks.saripaar.annotation.Pattern;
 import com.shashank.platform.loginui.Api.Api;
-import com.shashank.platform.loginui.BuildConfig;
+
 import com.shashank.platform.loginui.R;
 
 import com.shuhart.stepview.StepView;

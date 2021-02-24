@@ -118,6 +118,7 @@
 
 
 
+<!--
 
                     <com.google.android.material.textfield.TextInputLayout
                         android:layout_width="match_parent"
@@ -135,6 +136,7 @@
                             android:inputType="number"/>
                     </com.google.android.material.textfield.TextInputLayout>
 
+-->
 
 
 

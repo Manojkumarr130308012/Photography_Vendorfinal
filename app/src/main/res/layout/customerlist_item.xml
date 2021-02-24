@@ -7,8 +7,14 @@
     android:layout_marginLeft="4dp"
     android:layout_marginRight="4dp"
     android:layout_marginTop="4dp"
-    android:layout_marginBottom="2dp"
+    app:cardCornerRadius="10dp"
+    android:id="@+id/card"
     android:layout_height="wrap_content">
+    <TextView
+        android:layout_width="5dp"
+        android:background="@color/blue1"
+        android:layout_height="match_parent"
+        ></TextView>
     <LinearLayout
         android:layout_width="match_parent"
         android:orientation="vertical"
@@ -16,13 +22,23 @@
 
 <RelativeLayout
     android:layout_width="match_parent"
+    android:layout_marginLeft="5dp"
     android:layout_height="wrap_content">
 
     <ImageView android:layout_width="45dp"
         android:layout_margin="8dp"
         android:layout_height="45dp"
-        android:layout_centerVertical="true"
         android:id="@+id/img_letter_icon"/>
+
+
+    <ImageView
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_alignParentRight="true"
+          android:layout_margin="10dp"
+        android:visibility="gone"
+        android:id="@+id/telephone"
+        android:src="@drawable/telephone" />
 
     <TextView
         android:id="@+id/txt_customer_name"
@@ -31,7 +47,7 @@
         android:layout_toRightOf="@+id/img_letter_icon"
         android:layout_marginTop="8dp"
         android:textColor="@color/primary_text_dark"
-        android:textAppearance="?attr/textAppearanceListItem" />
+         />
 
 
     <TextView
@@ -42,7 +58,7 @@
         android:layout_below="@+id/txt_customer_name"
         android:layout_marginTop="8dp"
         android:textColor="@color/primary_text_light"
-        android:textAppearance="?attr/textAppearanceListItemSecondary" />
+      />
 
     <TextView
         android:id="@+id/txt_customer_number"
@@ -52,7 +68,7 @@
         android:layout_below="@+id/txt_customer_place"
         android:layout_marginTop="8dp"
         android:textColor="@color/primary_text_light"
-        android:textAppearance="?attr/textAppearanceListItemSecondary" />
+        />
 
 
     <TextView
@@ -63,70 +79,13 @@
         android:layout_below="@+id/txt_customer_number"
         android:layout_marginTop="8dp"
         android:layout_marginBottom="8dp"
-        android:textStyle="bold|italic"
+        android:textStyle="bold"
         android:textColor="@color/primary_text_light"
-        android:textAppearance="?attr/textAppearanceListItemSecondary" />
+       />
+
+
+
 </RelativeLayout>
-<View
-    android:layout_width="match_parent"
-    android:background="@color/divider"
-    android:layout_height="0.2dp"></View>
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
 
-           <!-- <Button
-                android:id="@+id/btn_payment"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_gravity="start"
-                android:layout_weight="1"
-                android:textStyle="bold"
-                android:textAppearance="?attr/textAppearanceListItemSecondary"
-                android:background="@android:color/white"
-                android:text="Pay Outstanding" />-->
-
-            <ImageButton
-                android:padding="8dp"
-                android:id="@+id/btn_payment"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_weight="1"
-                android:visibility="gone"
-                android:tint="@color/primary_text"
-                android:textAppearance="?attr/textAppearanceListItemSecondary"
-                android:background="@android:color/white" />
-            <View
-                android:layout_width="0.2dp"
-                android:background="@color/divider"
-                android:layout_height="match_parent"></View>
-           <!-- <Button
-                android:id="@+id/btn_new_order"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_gravity="start"
-                android:layout_weight="1"
-                android:layout_marginBottom="0dp"
-                android:textColor="@color/colorAccent"
-                android:textStyle="bold"
-                android:background="@null"
-                android:textAppearance="?attr/textAppearanceListItemSecondary"
-                android:text="New Order" />-->
-
-            <ImageButton
-                android:id="@+id/btn_new_order"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_gravity="start"
-                android:layout_weight="1"
-                android:layout_marginBottom="0dp"
-                android:background="@android:color/white"
-                android:padding="8dp"
-                android:visibility="gone"
-                android:textAppearance="?attr/textAppearanceListItemSecondary"/>
-
-        </LinearLayout>
     </LinearLayout>
 </androidx.cardview.widget.CardView>

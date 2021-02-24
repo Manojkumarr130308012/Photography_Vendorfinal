@@ -28,6 +28,7 @@ import com.shashank.platform.loginui.Activity.Bottommenu;
 import com.shashank.platform.loginui.Activity.Editprofile;
 import com.shashank.platform.loginui.Activity.MainActivity;
 import com.shashank.platform.loginui.Activity.Plans;
+import com.shashank.platform.loginui.Activity.Planupgrade;
 import com.shashank.platform.loginui.Api.Api;
 import com.shashank.platform.loginui.Config.DBHelper;
 import com.shashank.platform.loginui.R;
@@ -63,7 +64,7 @@ View view;
     ImageView backarrow;
     String subject="";
     String bodyText="";
-    ImageView edit;
+    ImageView edit,upgrade;
 
     String vendor_id;
     String vendor_fname;
@@ -78,6 +79,7 @@ View view;
             String vendor_address;
     String vendor_service;
     String vendor_location;
+    String vendor_amount;
     String vendor_status ;
             String vendor_plan ;
     public Profile() {
@@ -96,6 +98,7 @@ View view;
         personalinfobtn = view.findViewById(R.id.personalinfobtn);
         Bussinessbtn = view.findViewById(R.id.Bussinessbtn);
         edit = view.findViewById(R.id.edit);
+        upgrade = view.findViewById(R.id.upgrade);
 
         edit.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -106,10 +109,19 @@ View view;
                 i.putExtra("vendor_lname", ""+vendor_lname);
                 i.putExtra("vendor_dob", ""+vendor_dob);
                 i.putExtra("vendor_mobile", ""+vendor_mobile);
+                i.putExtra("vendor_email", ""+vendor_email);
                 i.putExtra("vendor_address", ""+vendor_address);
                 i.putExtra("vendor_whatsapp", ""+vendor_whatsapp);
                 i.putExtra("vendor_category", ""+vendor_category);
                 i.putExtra("vendor_location", ""+vendor_location);
+                i.putExtra("vendor_amount", ""+vendor_amount);
+                startActivity(i);
+            }
+        });
+        upgrade.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent i=new Intent(getActivity(), Planupgrade.class);
                 startActivity(i);
             }
         });
@@ -217,6 +229,7 @@ View view;
                          vendor_service = obj.getString("vendor_service");
                          vendor_location = obj.getString("vendor_location");
                          vendor_status = obj.getString("vendor_status");
+//                        vendor_amount = obj.getString("vendor_status");
                          vendor_plan = obj.getString("vendor_plan");
 
                         Picasso.with(getActivity()).load(vendor_proof).resize(300, 300).into(image);
