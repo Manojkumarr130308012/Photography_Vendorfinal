@@ -93,9 +93,11 @@ public class YoutubeRecyclerAdapter extends RecyclerView.Adapter<BaseViewHolder>
                 @Override
                 public void onReady(@NonNull YouTubePlayer youTubePlayer) {
 
-                    youTubePlayer.loadVideo(mYoutubeVideo.getVideoId(), 0);
+                    youTubePlayer.cueVideo(mYoutubeVideo.getVideoId(), 0);
                 }
             });
+//            youTubePlayerView.playSoundEffect(1);
+
             playButton.setOnClickListener(view -> {
 
 //                playButton.setVisibility(View.GONE);

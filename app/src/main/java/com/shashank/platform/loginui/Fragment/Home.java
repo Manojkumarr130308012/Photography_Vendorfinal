@@ -217,7 +217,7 @@ View view;
                                     // send data from the
                                     // AlertDialog to the Activity
                                     postvideos(editText.getText().toString());
-                                    new Home.ReadJSON().execute(Api.videosurl+""+na);
+//                                    new Home.ReadJSON().execute(Api.videosurl+""+na);
                                 }
                             });
 
@@ -359,7 +359,7 @@ View view;
             try {
                 JSONObject jsonObject = new JSONObject(content);
                 JSONArray jsonArray =  jsonObject.getJSONArray("videos");
-
+                videoArrayList.clear();
                 for(int i =0;i<jsonArray.length(); i++){
                     JSONObject productObject = jsonArray.getJSONObject(i);
 
@@ -494,6 +494,7 @@ View view;
 
                 Log.e("gfgfgfghf",""+response);
                 progressDialog.dismiss();
+                new Home.ReadJSON().execute(Api.videosurl+""+na);
 
             }
         }, new Response.ErrorListener() {
