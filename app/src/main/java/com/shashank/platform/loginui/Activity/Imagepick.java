@@ -139,7 +139,7 @@ videostotal= Integer.parseInt(image);
                 if (totalselect <= videostotal){
                     uploadImagesToServer();
                 }else{
-                    Snackbar.make(view, "Upgrade your Plan...You Can Upload Only"+(totalselect-videostotal), Snackbar.LENGTH_LONG)
+                    Snackbar.make(view, "Your Limit is Over.Upgrade your Plan!!!", Snackbar.LENGTH_LONG)
                             .setAction("Action", null).show();
                 }
 

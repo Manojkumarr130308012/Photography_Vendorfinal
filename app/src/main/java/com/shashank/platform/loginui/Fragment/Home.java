@@ -227,7 +227,7 @@ View view;
                             = builder.create();
                     dialog.show();
                 }else{
-                    Snackbar.make(view, "Upgrade your Plan...Your Limit is over", Snackbar.LENGTH_LONG)
+                    Snackbar.make(view, "Your Limit is Over.Upgrade your Plan!!!", Snackbar.LENGTH_LONG)
                             .setAction("Action", null).show();
                 }
 
