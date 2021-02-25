@@ -2,6 +2,7 @@ package com.shashank.platform.loginui.Activity;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -9,17 +10,11 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.graphics.Color;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.Request;
@@ -57,12 +52,20 @@ public class Plans extends AppCompatActivity implements AdapterView.OnItemClickL
     Button choose;
     DBHelper dbHelper;
     String vendorid;
+
+    String image,videos;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_plans);
         choose=findViewById(R.id.choose);
         dbHelper=new DBHelper(this);
+
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setTitle("Chhose Your Plan");
 
         Intent intent = getIntent();
         vendorid= intent.getStringExtra("vendorid");
@@ -133,9 +136,14 @@ public class Plans extends AppCompatActivity implements AdapterView.OnItemClickL
     }
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        Toast.makeText(getApplicationContext(), position + " - " + mSingleCheckList.get(position).getPersonName(), Toast.LENGTH_SHORT).show();
+//        Toast.makeText(getApplicationContext(), position + " - " + mSingleCheckList.get(position).getPersonName(), Toast.LENGTH_SHORT).show();
         planid=""+mSingleCheckList.get(position).getPersonid();
+//        Toast.makeText(this, ""+planid, Toast.LENGTH_SHORT).show();
         planamount=""+mSingleCheckList.get(position).getAmount();
+        image=""+mSingleCheckList.get(position).getPhotos();
+        videos=""+mSingleCheckList.get(position).getVideos();
+
+
         AlertDialog alertDialog = new AlertDialog.Builder(this)
                 .setIcon(android.R.drawable.ic_dialog_alert)
                 .setTitle("Plan Choose")
@@ -145,7 +153,13 @@ public class Plans extends AppCompatActivity implements AdapterView.OnItemClickL
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i)
                     {
-                        startPayment();
+                        if (planid.equals("1")) {
+
+                            freePlan(planid);
+
+                        } else {
+                            startPayment();
+                        }
 //                        finish();
                     }
                 })
@@ -155,9 +169,81 @@ public class Plans extends AppCompatActivity implements AdapterView.OnItemClickL
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i)
                     {
-                        Toast.makeText(getApplicationContext(),"Nothing Happened",Toast.LENGTH_LONG).show();
+//                        Toast.makeText(getApplicationContext(),"Nothing Happened",Toast.LENGTH_LONG).show();
                     }
                 }).show();
+    }
+
+    private void freePlan(String planid) {
+
+        String url=Api.planpayamounturl;
+        RequestQueue requestQueue;
+        requestQueue = Volley.newRequestQueue(getApplicationContext());
+
+        StringRequest strReq = new StringRequest(Request.Method.POST,
+                url, new Response.Listener<String>() {
+
+            @Override
+            public void onResponse(String response) {
+//                Log.d(TAG, "Register Response: " + response.toString());
+
+                try {
+                    JSONObject jObj = new JSONObject(response);
+                    boolean error = jObj.getBoolean("error");
+
+                    // Check for error node in json
+                    if (!error) {
+
+                        Toast toast = Toast.makeText(Plans.this, "Your Booking Successfully...", Toast.LENGTH_LONG);
+
+                        toast.show();
+                        dbHelper.insertData(vendorid,planid,image,videos);
+                        Intent i=new Intent(Plans.this,Bottommenu.class);
+                        startActivity(i);
+                    } else {
+                        // Error in login. Get the error message
+                        String errorMsg = jObj.getString("error_msg");
+
+                        Toast.makeText(Plans.this, ""+errorMsg, Toast.LENGTH_SHORT).show();
+                    }
+                } catch (JSONException e) {
+                    // JSON error
+                    e.printStackTrace();
+//                    toast("Json error: " + e.getMessage());
+                    Toast.makeText(Plans.this, ""+e.getMessage(), Toast.LENGTH_SHORT).show();
+
+                }
+
+            }
+        }, new Response.ErrorListener() {
+
+            @Override
+            public void onErrorResponse(VolleyError error) {
+//                Log.e(TAG, "Login Error: " + error.getMessage());
+                Toast.makeText(Plans.this, "Unknown Error occurred", Toast.LENGTH_SHORT).show();
+                progressDialog.hide();
+            }
+        }) {
+
+            @Override
+            protected Map<String, String> getParams() {
+                // Posting parameters to login url
+                Map<String, String> params = new HashMap<>();
+                params.put("pid", planid);
+                params.put("vid", vendorid);
+                params.put("payid", "Free");
+
+
+                return params;
+            }
+
+        };
+
+        // Adding request to request queue
+        requestQueue.add(strReq);
+        Intent i=new Intent(Plans.this,Bottommenu.class);
+        startActivity(i);
+        Toast.makeText(this, "Free Plan Choosed Successfully! ", Toast.LENGTH_SHORT).show();
     }
 
 
@@ -280,36 +366,67 @@ public class Plans extends AppCompatActivity implements AdapterView.OnItemClickL
 */
 
 
-
-    public void startPayment() {
-        /**
-         * You need to pass current activity in order to let Razorpay create CheckoutActivity
-         */
+    private void startPayment() {
         final Activity activity = this;
-        final Checkout co = new Checkout();
+        final Checkout checkout = new Checkout();
+
+        JSONObject object = new JSONObject();
+        int amt = Integer.parseInt(planamount) * 100;
         try {
-            JSONObject options = new JSONObject();
-            options.put("name", "BlueApp Software");
-            options.put("description", "App Payment");
+            object.put("key", "rzp_test_1DP5mmOlF5G5ag");
+            object.put("name", "Happy Celebrations");
+            object.put("description", "Plan Description");
             //You can omit the image option to fetch the image from dashboard
-            options.put("image", "https://rzp-mobile.s3.amazonaws.com/images/rzp.png");
-            options.put("currency", "INR");
-            String payment = planamount;
-            // amount is in paise so please multiple it by 100
-            //Payment failed Invalid amount (should be passed in integer paise. Minimum value is 100 paise, i.e. ₹ 1)
-            double total = Double.parseDouble(payment);
-            total = total * 100;
-            options.put("amount", total);
+            object.put("image", "https://s3.amazonaws.com/rzp-mobile/images/rzp.png");
+            object.put("currency", "INR");
+            object.put("amount", ""+amt);
+
             JSONObject preFill = new JSONObject();
-            preFill.put("email", "kamal.bunkar07@gmail.com");
-            preFill.put("contact", "9144040888");
-            options.put("prefill", preFill);
-            co.open(activity, options);
-        } catch (Exception e) {
-            Toast.makeText(activity, "Error in payment: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+            preFill.put("email", "test@gmail.com");
+            preFill.put("contact", "9999999999");
+
+            object.put("prefill", preFill);
+
+            checkout.open(activity,object);
+
+        } catch (JSONException e) {
+            Toast.makeText(activity, "Exception :"+e.getMessage(), Toast.LENGTH_SHORT).show();
             e.printStackTrace();
         }
     }
+
+//    public void startPayment() {
+//        /**
+//         * You need to pass current activity in order to let Razorpay create CheckoutActivity
+//         */
+//        final Activity activity = this;
+//        final Checkout co = new Checkout();
+//        try {
+//            JSONObject options = new JSONObject();
+//            options.put("key", ""+razor_keyy);
+//            options.put("name", "BlueApp Software");
+//            options.put("description", "App Payment");
+//            //You can omit the image option to fetch the image from dashboard
+//            options.put("image", "https://rzp-mobile.s3.amazonaws.com/images/rzp.png");
+//            options.put("currency", "INR");
+//            String payment = planamount;
+//            // amount is in paise so please multiple it by 100
+//            //Payment failed Invalid amount (should be passed in integer paise. Minimum value is 100 paise, i.e. ₹ 1)
+//            double total = Double.parseDouble(payment);
+//            total = total * 100;
+//            options.put("amount", total);
+//            JSONObject preFill = new JSONObject();
+//            preFill.put("email", "kamal.bunkar07@gmail.com");
+//            preFill.put("contact", "9144040888");
+//            options.put("prefill", preFill);
+//            co.open(activity, options);
+//        } catch (Exception e) {
+//            Toast.makeText(activity, "Error in payment: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+//            e.printStackTrace();
+//        }
+//    }
+
+
     @Override
     public void onPaymentSuccess(String s) {
         // payment successfull pay_DGU19rDsInjcF2
@@ -336,7 +453,7 @@ public class Plans extends AppCompatActivity implements AdapterView.OnItemClickL
                         Toast toast = Toast.makeText(Plans.this, "Your Booking Successfully...", Toast.LENGTH_LONG);
 
                         toast.show();
-                        dbHelper.insertData(vendorid,planid);
+                        dbHelper.insertData(vendorid,planid,image,videos);
                         Intent i=new Intent(Plans.this,Bottommenu.class);
                         startActivity(i);
                     } else {
@@ -392,5 +509,31 @@ public class Plans extends AppCompatActivity implements AdapterView.OnItemClickL
         } catch (Exception e) {
             Log.e("OnPaymentError", "Exception in onPaymentError", e);
         }
+    }
+
+
+
+
+    @Override
+    public void onBackPressed() {
+
+            android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(Plans.this);
+            builder.setTitle(R.string.app_name);
+            builder.setIcon(R.mipmap.ic_launcher);
+            builder.setMessage("Do you want to exit?")
+                    .setCancelable(false)
+                    .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            moveTaskToBack(true);
+                        }
+                    })
+                    .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            dialog.cancel();
+                        }
+                    });
+            android.app.AlertDialog alert = builder.create();
+            alert.show();
+
     }
 }

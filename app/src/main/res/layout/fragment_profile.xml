@@ -96,6 +96,7 @@
                             android:gravity="center_horizontal"
                             android:textColor="#424242"
                             android:textSize="21sp"
+                            android:visibility="gone"
                             android:textStyle="bold" />
 
                         <TextView
@@ -122,17 +123,20 @@
     android:src="@drawable/ic_edit"></ImageView>
 
 
-                        <ImageView
-                            android:layout_width="40dp"
-                            android:layout_height="40dp"
-                            android:padding="8dp"
-                            android:id="@+id/upgrade"
-                            android:layout_alignParentRight="true"
-                            android:layout_gravity="right"
-                            android:background="@drawable/circular_grey_bordersolid"
-                            android:src="@drawable/ic_baseline_upgrade">
 
-</ImageView>
+
+                        <Button
+                            android:layout_width="120dp"
+                            android:text="Plan Upgrade"
+                            android:background="@drawable/circularbluecornerbordersolid"
+                            android:textColor="@color/white"
+                            android:id="@+id/upgrade"
+                            android:singleLine="true"
+                            android:textSize="12dp"
+                            android:layout_marginTop="8dp"
+                            android:layout_alignParentRight="true"
+                            android:layout_height="24dp"/>
+
 
                     </RelativeLayout>
 
@@ -348,29 +352,7 @@
                                         android:textColor="@color/goodgrey" />
                                 </LinearLayout>
 
-                                <LinearLayout
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_marginTop="10dp"
-                                    android:gravity="center_vertical"
-                                    android:paddingRight="8dp">
 
-                                    <ImageView
-                                        android:layout_width="40dp"
-                                        android:layout_height="40dp"
-                                        android:background="@drawable/circular_grey_bordersolid"
-                                        android:padding="10dp"
-                                        android:src="@drawable/location" />
-
-                                    <TextView
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:layout_marginLeft="20dp"
-                                        android:text="Leeds, United Kingdom"
-                                        android:textSize="15sp"
-                                        android:id="@+id/address"
-                                        android:textColor="@color/goodgrey" />
-                                </LinearLayout>
 
                             </LinearLayout>
 
@@ -518,15 +500,16 @@
                                             android:layout_height="40dp"
                                             android:background="@drawable/circular_grey_bordersolid"
                                             android:padding="10dp"
-                                            android:src="@drawable/briefcasekey" />
+                                            android:src="@drawable/location" />
 
                                         <TextView
-                                            android:id="@+id/bussinesskey"
                                             android:layout_width="wrap_content"
                                             android:layout_height="wrap_content"
                                             android:layout_marginLeft="20dp"
                                             android:text="Leeds, United Kingdom"
-                                            android:textSize="15sp" />
+                                            android:textSize="15sp"
+                                            android:id="@+id/address"
+                                            android:textColor="@color/goodgrey" />
                                     </LinearLayout>
 
                                 </LinearLayout>

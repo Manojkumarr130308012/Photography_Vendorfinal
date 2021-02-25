@@ -90,7 +90,7 @@ public class SingleCheckAdapter extends RecyclerView.Adapter<SingleCheckAdapter.
             mText.setText(item.getPersonName());
             mText1.setText("Photos:"+item.getPhotos());
             mText2.setText("Videos:"+item.getVideos());
-            mText3.setText("Amount:"+item.getAmount());
+            mText3.setText(""+item.getAmount()+" Rs");
         }
 
         @Override

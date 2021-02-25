@@ -10,6 +10,7 @@ import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TableLayout;
@@ -64,8 +65,8 @@ View view;
     ImageView backarrow;
     String subject="";
     String bodyText="";
-    ImageView edit,upgrade;
-
+    ImageView edit;
+Button upgrade;
     String vendor_id;
     String vendor_fname;
             String vendor_lname ;
@@ -145,7 +146,6 @@ View view;
         address = view.findViewById(R.id.address);
         membershipid = view.findViewById(R.id.membershipid);
         bussness = view.findViewById(R.id.bussiness);
-        bussesskey = view.findViewById(R.id.bussinesskey);
         stuid = view.findViewById(R.id.stuid);
         image = view.findViewById(R.id.image);
         birthdate = view.findViewById(R.id.birthdate);
@@ -243,7 +243,7 @@ View view;
                         address.setText(""+vendor_address);
                         membershipid.setText(""+vendor_plan);
                         bussness.setText(""+vendor_cname);
-                        bussesskey.setText(""+vendor_cname);
+
 //                        birthdate.setText(""+dobstr);
 
 

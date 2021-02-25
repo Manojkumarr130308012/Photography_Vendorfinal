@@ -17,6 +17,8 @@ public class DBHelper extends SQLiteOpenHelper {
     public static final String COL_1="ID";
     public static final String COL_2="name";
     public static final String COL_3="pass";
+    public static final String COL_4="image";
+    public static final String COL_5="video";
 
 
 
@@ -28,7 +30,7 @@ public class DBHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
 //        db.execSQL("CREATE TABLE " + TABLE_NAME + " (ID INTEGER,ip TEXT,db TEXT,user TEXT,pass TEXT)");
-        db.execSQL("CREATE TABLE " + TABLE_NAME + " (ID TEXT,name TEXT,pass TEXT)");
+        db.execSQL("CREATE TABLE " + TABLE_NAME + " (ID TEXT,name TEXT,pass TEXT,image TEXT,video TEXT)");
 
 
     }
@@ -39,12 +41,14 @@ public class DBHelper extends SQLiteOpenHelper {
         onCreate(db);
     }
 
-    public boolean insertData(String name, String userid) {
+    public boolean insertData(String name, String planid, String image, String videos) {
         SQLiteDatabase sqLiteDatabase = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
 //        contentValues.put("ID", ModelClass.id);
         contentValues.put("name", name);
-        contentValues.put("pass", userid);
+        contentValues.put("pass", planid);
+        contentValues.put("image", image);
+        contentValues.put("video", videos);
 
         sqLiteDatabase.insert(TABLE_NAME, null, contentValues);
         return true;

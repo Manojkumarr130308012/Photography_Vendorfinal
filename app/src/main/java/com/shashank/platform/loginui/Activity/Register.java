@@ -62,11 +62,12 @@ import com.basgeekball.awesomevalidation.ValidationStyle;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
 import com.google.android.material.textfield.TextInputEditText;
+import com.gun0912.tedpermission.PermissionListener;
+import com.gun0912.tedpermission.TedPermission;
 import com.karumi.dexter.Dexter;
 import com.karumi.dexter.PermissionToken;
 import com.karumi.dexter.listener.PermissionDeniedResponse;
 import com.karumi.dexter.listener.PermissionGrantedResponse;
-import com.karumi.dexter.listener.single.PermissionListener;
 import com.mobsandgeeks.saripaar.ValidationError;
 import com.mobsandgeeks.saripaar.Validator;
 import com.mobsandgeeks.saripaar.annotation.Email;
@@ -281,14 +282,14 @@ public class Register extends AppCompatActivity implements Validator.ValidationL
         stepView.setOnStepClickListener(new StepView.OnStepClickListener() {
             @Override
             public void onStepClick(int step) {
-                Toast.makeText(Register.this, "Step " + step, Toast.LENGTH_SHORT).show();
+//                Toast.makeText(Register.this, "Step " + step, Toast.LENGTH_SHORT).show();
             }
         });
         findViewById(R.id.next).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
-                Toast.makeText(Register.this, ""+currentStep, Toast.LENGTH_SHORT).show();
+//                Toast.makeText(Register.this, ""+currentStep, Toast.LENGTH_SHORT).show();
 
                 if (currentStep == 0){
                     firstnamestring=firstname.getText().toString();
@@ -433,7 +434,7 @@ public class Register extends AppCompatActivity implements Validator.ValidationL
         findViewById(R.id.back).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(Register.this, ""+currentStep, Toast.LENGTH_SHORT).show();
+//                Toast.makeText(Register.this, ""+currentStep, Toast.LENGTH_SHORT).show();
 
                 if (currentStep == 0){
                     lin1.setVisibility(View.VISIBLE);
@@ -490,7 +491,7 @@ public class Register extends AppCompatActivity implements Validator.ValidationL
         IDProf1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                selectImage();
+                requestPermission();
 
             }
         });
@@ -498,7 +499,7 @@ public class Register extends AppCompatActivity implements Validator.ValidationL
             @Override
             public void onClick(View v) {
 
-
+                requestPermission1();
                 selectImage1();
 
             }
@@ -849,7 +850,7 @@ public class Register extends AppCompatActivity implements Validator.ValidationL
                 s += ", " + child.getText().toString();
             }
         }
-        Toast.makeText(this, s, Toast.LENGTH_LONG).show();
+//        Toast.makeText(this, s, Toast.LENGTH_LONG).show();
     }
 
     // User close a Chip.
@@ -864,7 +865,7 @@ public class Register extends AppCompatActivity implements Validator.ValidationL
 
     @Override
     public void onValidationSucceeded() {
-        Toast.makeText(this, "We got it right!", Toast.LENGTH_SHORT).show();
+//        Toast.makeText(this, "We got it right!", Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -963,6 +964,10 @@ public class Register extends AppCompatActivity implements Validator.ValidationL
 
     public void ImageUploadToServerFunction() {
 
+        final ProgressDialog progressDialog = ProgressDialog.show(Register.this,
+                "Please wait",
+                "Loading...");
+
         ByteArrayOutputStream byteArrayOutputStreamObject;
         ByteArrayOutputStream byteArrayOutputStreamObject1;
 
@@ -995,9 +1000,9 @@ public class Register extends AppCompatActivity implements Validator.ValidationL
 
                 // Dismiss the progress dialog after done uploading.
 //                progressDialog.dismiss();
-
+                progressDialog.dismiss();
                 // Printing uploading success message coming from server on android app.
-                Toast.makeText(Register.this, string1, Toast.LENGTH_LONG).show();
+                Toast.makeText(Register.this, "Your Registration Success!", Toast.LENGTH_LONG).show();
 
                 Intent intent = new Intent(Register.this, MainActivity.class);
                 startActivity(intent);
@@ -1022,7 +1027,7 @@ public class Register extends AppCompatActivity implements Validator.ValidationL
                 HashMapParams.put("wnumber",""+watsapp.getText().toString());
                 HashMapParams.put("email",""+emailstring);
                 HashMapParams.put("cname",""+companynamestring);
-                HashMapParams.put("amount",""+amountstring);
+                HashMapParams.put("amount",""+amount.getText().toString());
                 HashMapParams.put("dob",""+dobsting);
                 HashMapParams.put("address",""+addressstring);
                 HashMapParams.put("desc",""+descriptionstring);
@@ -1195,4 +1200,44 @@ public class Register extends AppCompatActivity implements Validator.ValidationL
 //
 //
 //    }
+
+
+    private void requestPermission(){
+        com.gun0912.tedpermission.PermissionListener permissionlistener = new PermissionListener() {
+            @Override
+            public void onPermissionGranted() {
+//                selectImagesFromGallery();
+                selectImage();
+            }
+
+            @Override
+            public void onPermissionDenied(List<String> deniedPermissions) {
+                Toast.makeText(Register.this, "Permission Denied\n" + deniedPermissions.toString(), Toast.LENGTH_SHORT).show();
+            }
+        };
+        TedPermission.with(this)
+                .setPermissionListener(permissionlistener)
+                .setDeniedMessage("If you reject permission,you can not use this service\n\nPlease turn on permissions at [Setting] > [Permission]")
+                .setPermissions(Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.CAMERA)
+                .check();
+    }
+    private void requestPermission1(){
+        com.gun0912.tedpermission.PermissionListener permissionlistener = new PermissionListener() {
+            @Override
+            public void onPermissionGranted() {
+//                selectImagesFromGallery();
+                selectImage1();
+            }
+
+            @Override
+            public void onPermissionDenied(List<String> deniedPermissions) {
+                Toast.makeText(Register.this, "Permission Denied\n" + deniedPermissions.toString(), Toast.LENGTH_SHORT).show();
+            }
+        };
+        TedPermission.with(this)
+                .setPermissionListener(permissionlistener)
+                .setDeniedMessage("If you reject permission,you can not use this service\n\nPlease turn on permissions at [Setting] > [Permission]")
+                .setPermissions(Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.CAMERA)
+                .check();
+    }
 }

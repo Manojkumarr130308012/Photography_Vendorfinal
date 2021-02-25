@@ -2,6 +2,7 @@ package com.shashank.platform.loginui.Activity;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.Manifest;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -27,6 +28,8 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.gson.JsonObject;
+import com.gun0912.tedpermission.PermissionListener;
+import com.gun0912.tedpermission.TedPermission;
 import com.shashank.platform.loginui.Api.Api;
 import com.shashank.platform.loginui.Config.DBHelper;
 import com.shashank.platform.loginui.R;
@@ -44,6 +47,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
@@ -64,6 +68,7 @@ public class MainActivity extends AppCompatActivity {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_main);
+//        requestPermission();
         imageView = findViewById(R.id.imageView);
         textView = findViewById(R.id.textView);
         signin = findViewById(R.id.signin);
@@ -75,18 +80,7 @@ public class MainActivity extends AppCompatActivity {
         signin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                checkusername = username1.getText().toString();
-                checkpassword = password1.getText().toString();
-                //validate form
-                if(validateLogin(checkusername, checkpassword)){
-                    //do loginhj
-
-                    Log.e("ffffffffffffffff",""+checkusername);
-                    Log.e("ffffffffffffffff",""+checkpassword);
-
-                    getLogin(checkusername,checkpassword);
-//                    pbar.setVisibility(View.VISIBLE);
-                }
+              requestPermission();
 
             }
         });
@@ -210,6 +204,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onResponse(String response) {
                 //let's parse json data
+                Log.e("response",""+response);
                 try {
                     JSONObject jsonObject = new JSONObject(response);
                     JSONObject obj = jsonObject.getJSONObject("reg");
@@ -222,6 +217,7 @@ public class MainActivity extends AppCompatActivity {
                         String sts = obj.getString("vendor_mobile");
                         String plan = obj.getString("vendor_plan");
 
+
                         if (plan.equals("0")) {
                             Toast.makeText(MainActivity.this, ""+msg, Toast.LENGTH_SHORT).show();
                             Intent intent = new Intent(MainActivity.this, Plans.class);
@@ -229,7 +225,9 @@ public class MainActivity extends AppCompatActivity {
                             startActivity(intent);
                             overridePendingTransition(R.anim.slide_in_right,R.anim.slide_from_right);
                         }else{
-                            dbHelper.insertData(name,plan);
+                            String vendor_pimage = obj.getString("vendor_pimage");
+                            String vendor_pvideo = obj.getString("vendor_pvideo");
+                            dbHelper.insertData(name,plan,vendor_pimage,vendor_pvideo);
                             Toast.makeText(MainActivity.this, ""+msg, Toast.LENGTH_SHORT).show();
                             Intent intent = new Intent(MainActivity.this, Bottommenu.class);
                             startActivity(intent);
@@ -277,6 +275,35 @@ public class MainActivity extends AppCompatActivity {
         requestQueue.add(stringRequest);
 
     }
+    private void requestPermission(){
+        PermissionListener permissionlistener = new PermissionListener() {
+            @Override
+            public void onPermissionGranted() {
+//                selectImagesFromGallery();
+                checkusername = username1.getText().toString();
+                checkpassword = password1.getText().toString();
+                //validate form
+                if(validateLogin(checkusername, checkpassword)){
+                    //do loginhj
 
+                    Log.e("ffffffffffffffff",""+checkusername);
+                    Log.e("ffffffffffffffff",""+checkpassword);
+
+                    getLogin(checkusername,checkpassword);
+//                    pbar.setVisibility(View.VISIBLE);
+                }
+            }
+
+            @Override
+            public void onPermissionDenied(List<String> deniedPermissions) {
+                Toast.makeText(MainActivity.this, "Permission Denied\n" + deniedPermissions.toString(), Toast.LENGTH_SHORT).show();
+            }
+        };
+        TedPermission.with(this)
+                .setPermissionListener(permissionlistener)
+                .setDeniedMessage("If you reject permission,you can not use this service\n\nPlease turn on permissions at [Setting] > [Permission]")
+                .setPermissions(Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.CAMERA)
+                .check();
+    }
 
 }

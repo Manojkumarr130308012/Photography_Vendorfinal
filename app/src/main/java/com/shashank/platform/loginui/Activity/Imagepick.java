@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.Manifest;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -87,6 +88,11 @@ public class Imagepick extends AppCompatActivity {
     String ConvertImage;
     DBHelper dbHelper;
     String id,na,pa;
+    String imagecount;
+    int imagegetcount,videostotal;
+    String image;
+    String video;
+    int innerimagesize;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -95,6 +101,10 @@ public class Imagepick extends AppCompatActivity {
         btnSelectImage=findViewById(R.id.sel_image);
         rcvPhoto=findViewById(R.id.rcv_photo);
         photoAdapter=new PhtotAdapter(this);
+
+        Intent intent = getIntent();
+        imagecount= intent.getStringExtra("imagecount");
+        imagegetcount= Integer.parseInt(imagecount);
         dbHelper=new DBHelper(this);
         Cursor res = dbHelper.getAllData();
 
@@ -102,9 +112,12 @@ public class Imagepick extends AppCompatActivity {
             id = res.getString(0);
             na = res.getString(1);
             pa = res.getString(2);
+            image = res.getString(3);
+            video = res.getString(4);
+
         }
 
-
+videostotal= Integer.parseInt(image);
         Log.e("dddddddddddd",""+na);
         GridLayoutManager gridLayoutManager=new GridLayoutManager(this,2);
         rcvPhoto.setLayoutManager(gridLayoutManager);
@@ -119,7 +132,20 @@ public class Imagepick extends AppCompatActivity {
         });
 
         btnUpload = findViewById(R.id.upload);
-        btnUpload.setOnClickListener(v -> uploadImagesToServer()  );
+        btnUpload.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                int totalselect=imagegetcount+innerimagesize;
+                if (totalselect <= videostotal){
+                    uploadImagesToServer();
+                }else{
+                    Snackbar.make(view, "Upgrade your Plan...You Can Upload Only"+(totalselect-videostotal), Snackbar.LENGTH_LONG)
+                            .setAction("Action", null).show();
+                }
+
+            }
+        });
+
         arrayList = new ArrayList<>();
 
     }
@@ -156,6 +182,7 @@ public class Imagepick extends AppCompatActivity {
                      if (uriList != null && !uriList.isEmpty()){
                          photoAdapter.setData(uriList);
                          arrayList=uriList;
+                         innerimagesize=arrayList.size();
                      }
                  }
              });
@@ -163,6 +190,9 @@ public class Imagepick extends AppCompatActivity {
 
 
     private void uploadImagesToServer() {
+        final ProgressDialog progressDialog = ProgressDialog.show(Imagepick.this,
+                "Please wait",
+                "Loading...");
         if (InternetConnection.checkConnection(Imagepick.this)) {
             Retrofit retrofit = new Retrofit.Builder()
                     .baseUrl(ApiService.BASE_URL)
@@ -183,7 +213,10 @@ public class Imagepick extends AppCompatActivity {
                     parts.add(prepareFilePart("image"+i, arrayList.get(i)));
                 }
             }
-Log.e("ffff",""+na);
+
+
+
+Log.e("ffff","");
             // create a map of data to pass along
             RequestBody description = createPartFromString(""+na);
             RequestBody size = createPartFromString(""+parts.size());
@@ -196,6 +229,7 @@ Log.e("ffff",""+na);
                 public void onResponse(@NonNull Call<ResponseBody> call, @NonNull Response<ResponseBody> response) {
                     hideProgress();
                     if(response.isSuccessful()) {
+                        progressDialog.dismiss();
                         Toast.makeText(Imagepick.this,
                                 "Images successfully uploaded!", Toast.LENGTH_SHORT).show();
                         Intent intent = new Intent(Imagepick.this, Bottommenu.class);

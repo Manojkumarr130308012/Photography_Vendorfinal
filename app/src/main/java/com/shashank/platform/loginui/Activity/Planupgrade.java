@@ -15,16 +15,13 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Toast;
 
-import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.razorpay.Checkout;
@@ -59,7 +56,7 @@ public class Planupgrade extends AppCompatActivity implements AdapterView.OnItem
     Button choose;
     DBHelper dbHelper;
     String vendorid;
-    String id,na,pa;
+    String id,na,pa,image,videos;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -277,6 +274,8 @@ public class Planupgrade extends AppCompatActivity implements AdapterView.OnItem
         Toast.makeText(getApplicationContext(), position + " - " + mSingleCheckList.get(position).getPersonName(), Toast.LENGTH_SHORT).show();
         planid=""+mSingleCheckList.get(position).getPersonid();
         planamount=""+mSingleCheckList.get(position).getAmount();
+        image=""+mSingleCheckList.get(position).getPhotos();
+        videos=""+mSingleCheckList.get(position).getVideos();
         AlertDialog alertDialog = new AlertDialog.Builder(this)
                 .setIcon(android.R.drawable.ic_dialog_alert)
                 .setTitle("Plan Choose")
@@ -478,7 +477,7 @@ public class Planupgrade extends AppCompatActivity implements AdapterView.OnItem
 
                         toast.show();
                         dbHelper.deleteRow();
-                        dbHelper.insertData(vendorid,planid);
+                        dbHelper.insertData(vendorid,planid,image,videos);
                         Intent i=new Intent(Planupgrade.this,Bottommenu.class);
                         startActivity(i);
                     } else {

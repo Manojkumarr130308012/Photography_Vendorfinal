@@ -1,7 +1,9 @@
 package com.shashank.platform.loginui.Adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Typeface;
+import android.net.Uri;
 import android.os.Build;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,7 +23,7 @@ import com.shashank.platform.loginui.Fragment.CustomerListFragment;
 import com.shashank.platform.loginui.Model.CustomerData;
 import com.shashank.platform.loginui.R;
 import com.shashank.platform.loginui.font.FontFace;
-import com.shashank.platform.loginui.font.OpenSansFontUtils;
+
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,7 +35,7 @@ public class CustomerListRecyclerViewAdapter extends RecyclerView.Adapter<Custom
 
     private List<CustomerData> _filteredItems;
     private final CustomerListFragment.OnListFragmentInteractionListener mListener;
-    OpenSansFontUtils mFontClass;
+
     Context mContext;
     Typeface openSanRegularBold;
 
@@ -42,8 +44,7 @@ public class CustomerListRecyclerViewAdapter extends RecyclerView.Adapter<Custom
         this._filteredItems = items;
         mListener = listener;
         mContext = context;
-        mFontClass = new OpenSansFontUtils(mContext);
-        openSanRegularBold = Typeface.createFromAsset(mContext.getAssets(), "fonts/OpenSans-Regular.ttf");
+//        openSanRegularBold = Typeface.createFromAsset(mContext.getAssets(), "fonts/OpenSans-Regular.ttf");
     }
 
     @Override
@@ -67,15 +68,12 @@ public class CustomerListRecyclerViewAdapter extends RecyclerView.Adapter<Custom
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
         holder.mItem = _filteredItems.get(position);
-        mFontClass.setTextView(holder.mTxtCustomerName, FontFace.SEMIBOLD);
-        mFontClass.setTextView(holder.mTxtCustomerNo, FontFace.REGULAR);
-        mFontClass.setTextView(holder.mTxtCustomerPlace, FontFace.REGULAR);
-        mFontClass.setTextView(holder.mTxtOutstandingamount, FontFace.SEMIBOLD_ITALIC);
+
         try {
             holder.mTxtCustomerName.setText(holder.mItem.getCustomername());
             holder.mTxtCustomerNo.setText(holder.mItem.getCustomerMobile());
             holder.mTxtCustomerPlace.setText(holder.mItem.getCustomerCityName());
-            holder.mTxtOutstandingamount.setText("Wallet amount : " + holder.mItem.getCustomerOSAmount() + " Rs");
+            holder.mTxtOutstandingamount.setText("Address : " + holder.mItem.getCustomerOSAmount());
             ColorGenerator generator = ColorGenerator.MATERIAL; // or use DEFAULT
             Character firstchar = holder.mItem.getCustomername().charAt(0);
 
@@ -86,6 +84,17 @@ public class CustomerListRecyclerViewAdapter extends RecyclerView.Adapter<Custom
                     .buildRound(firstchar.toString(), color1);
 
             holder.mImgNameCircle.setImageDrawable(drawable);
+
+
+            holder.telephone.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    String number=holder.mItem.getCustomerMobile();
+                    Intent intent = new Intent(Intent.ACTION_DIAL);
+                    intent.setData(Uri.parse("tel:"+number));
+                   mContext.startActivity(intent);
+                }
+            });
 
 
         } catch (Exception e) {
@@ -140,6 +149,7 @@ public class CustomerListRecyclerViewAdapter extends RecyclerView.Adapter<Custom
         public final TextView mTxtCustomerPlace;
         public final TextView mTxtOutstandingamount;
         public final ImageView mImgNameCircle;
+        public final ImageView telephone;
         public CustomerData mItem;
 
         public ViewHolder(View view) {
@@ -150,7 +160,8 @@ public class CustomerListRecyclerViewAdapter extends RecyclerView.Adapter<Custom
             mTxtCustomerPlace = view.findViewById(R.id.txt_customer_place);
             mTxtOutstandingamount = view.findViewById(R.id.txt_customer_os_amount);
             mImgNameCircle = view.findViewById(R.id.img_letter_icon);
- 
+            telephone = view.findViewById(R.id.telephone);
+
         }
     }
 }

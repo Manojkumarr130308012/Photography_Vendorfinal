@@ -47,6 +47,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.android.material.snackbar.Snackbar;
 import com.shashank.platform.loginui.Activity.Image;
 import com.shashank.platform.loginui.Activity.Imagepick;
 import com.shashank.platform.loginui.Activity.Register;
@@ -110,6 +111,9 @@ View view;
     @BindView(R.id.recyclerView)
     RecyclerView recyclerViewFeed;
     YoutubeRecyclerAdapter mRecyclerAdapter;
+    String image,videos;
+    int getvideocount;
+    ArrayList<YoutubeVideo> videoArrayList;
     public Home() {
         // Required empty public constructor
     }
@@ -128,12 +132,21 @@ View view;
         upload = view.findViewById(R.id.upload);
         dbHelper=new DBHelper(getActivity());
         Cursor res = dbHelper.getAllData();
-
+        videoArrayList=new ArrayList<>();
         while (res.moveToNext()) {
             id = res.getString(0);
             na = res.getString(1);
             pa = res.getString(2);
+            image = res.getString(3);
+            videos = res.getString(4);
         }
+
+        Log.e("na",""+na);
+        Log.e("pa",""+pa);
+        Log.e("image",""+image);
+        Log.e("videos",""+videos);
+
+        getvideocount= Integer.parseInt(videos);
         if (ContextCompat.checkSelfPermission(getActivity(),
                 Manifest.permission.READ_EXTERNAL_STORAGE)
                 != PackageManager.PERMISSION_GRANTED) {
@@ -160,6 +173,7 @@ View view;
             @Override
             public void onClick(View view) {
                Intent i=new Intent(getActivity(), Imagepick.class);
+               i.putExtra("imagecount",""+images.length);
                startActivity(i);
             }
         });
@@ -168,46 +182,55 @@ View view;
         upload.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // Create an alert builder
-                AlertDialog.Builder builder
-                        = new AlertDialog.Builder(getActivity());
-                builder.setTitle("Paste Video Url");
 
 
-                // set the custom layout
-                final View customLayout
-                        = getLayoutInflater()
-                        .inflate(
-                                R.layout.custom_layout,
-                                null);
-                builder.setView(customLayout);
-                editText = customLayout.findViewById(R.id.tvPaste);
-                editText.setText("");
-                ClipboardManager manager = (ClipboardManager)getActivity().getSystemService(CLIPBOARD_SERVICE);
-                ClipData pasteData = manager.getPrimaryClip();
-                ClipData.Item item = pasteData.getItemAt(0);
-                String paste = item.getText().toString();
-                editText.setText(""+paste);
-                // add a button
-                builder.setPositiveButton("OK",
-                                new DialogInterface.OnClickListener() {
 
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which)
-                                    {
-                                        manager.setText("");
-                                        // send data from the
-                                        // AlertDialog to the Activity
-                                        postvideos(editText.getText().toString());
-                                        new Home.ReadJSON().execute(Api.videosurl+""+na);
-                                    }
-                                });
+                if (getvideocount > videoArrayList.size()){
+                    // Create an alert builder
+                    AlertDialog.Builder builder
+                            = new AlertDialog.Builder(getActivity());
+                    builder.setTitle("Paste Video Url");
 
-                // create and show
-                // the alert dialog
-                AlertDialog dialog
-                        = builder.create();
-                dialog.show();
+
+                    // set the custom layout
+                    final View customLayout
+                            = getLayoutInflater()
+                            .inflate(
+                                    R.layout.custom_layout,
+                                    null);
+                    builder.setView(customLayout);
+                    editText = customLayout.findViewById(R.id.tvPaste);
+                    editText.setText("");
+                    ClipboardManager manager = (ClipboardManager)getActivity().getSystemService(CLIPBOARD_SERVICE);
+//                ClipData pasteData = manager.getPrimaryClip();
+//                ClipData.Item item = pasteData.getItemAt(0);
+//                String paste = item.getText().toString();
+//                editText.setText(""+paste);
+                    // add a button
+                    builder.setPositiveButton("OK",
+                            new DialogInterface.OnClickListener() {
+
+                                @Override
+                                public void onClick(DialogInterface dialog, int which)
+                                {
+                                    manager.setText("");
+                                    // send data from the
+                                    // AlertDialog to the Activity
+                                    postvideos(editText.getText().toString());
+                                    new Home.ReadJSON().execute(Api.videosurl+""+na);
+                                }
+                            });
+
+                    // create and show
+                    // the alert dialog
+                    AlertDialog dialog
+                            = builder.create();
+                    dialog.show();
+                }else{
+                    Snackbar.make(view, "Upgrade your Plan...Your Limit is over", Snackbar.LENGTH_LONG)
+                            .setAction("Action", null).show();
+                }
+
             }
         });
 
@@ -217,7 +240,7 @@ View view;
                 lin1.setVisibility(View.VISIBLE);
 //                Accesriesinfobtn.setVisibility(View.VISIBLE);
 
-                Accesriesinfobtn.setTextColor(getResources().getColor(R.color.primary_dark));
+                Accesriesinfobtn.setTextColor(getResources().getColor(R.color.primary_dark2));
                 digitalsbtn.setTextColor(getResources().getColor(R.color.txt_medium_gray));
 
 
@@ -232,7 +255,7 @@ View view;
 //                Accesriesinfobtn.setVisibility(View.VISIBLE);
 
                 Accesriesinfobtn.setTextColor(getResources().getColor(R.color.txt_medium_gray));
-                digitalsbtn.setTextColor(getResources().getColor(R.color.primary_dark));
+                digitalsbtn.setTextColor(getResources().getColor(R.color.primary_dark2));
 
 
             }
@@ -320,7 +343,7 @@ View view;
 
 
     class ReadJSON extends AsyncTask<String, Integer, String> {
-        ArrayList<YoutubeVideo> videoArrayList=new ArrayList<>();
+
         @Override
         protected String doInBackground(String... params) {
             return readURL(params[0]);

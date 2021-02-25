@@ -3,9 +3,13 @@ package com.shashank.platform.loginui.Activity;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.view.GravityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.widget.GridView;
@@ -13,20 +17,25 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.shashank.platform.loginui.Fragment.CustomerListFragment;
 import com.shashank.platform.loginui.Fragment.Customerlist;
 import com.shashank.platform.loginui.Fragment.Home;
 import com.shashank.platform.loginui.Fragment.Profile;
 import com.shashank.platform.loginui.R;
 
 public class Bottommenu extends AppCompatActivity implements BottomNavigationView.OnNavigationItemSelectedListener {
-    private ActionBar toolbar;
+    Toolbar toolbar;
     LinearLayout lin1,lin2;
     GridView simpleGrid;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_bottommenu);
-        toolbar = getSupportActionBar();
+        toolbar = findViewById(R.id.toolBar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setTitle("Home");
 
         //loading the default fragment
         loadFragment(new Home());
@@ -34,7 +43,6 @@ public class Bottommenu extends AppCompatActivity implements BottomNavigationVie
         //getting bottom navigation view and attaching the listener
         BottomNavigationView navigation = findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(this);
-        toolbar.setTitle("Upload");
     }
 
 
@@ -44,13 +52,13 @@ public class Bottommenu extends AppCompatActivity implements BottomNavigationVie
 
         switch (item.getItemId()) {
             case R.id.navigation_shop:
-                toolbar.setTitle("Customer");
-                fragment = new Customerlist();
+                toolbar.setTitle("Enquiry");
+                fragment = new CustomerListFragment();
                 break;
 
             case R.id.navigation_gifts:
                 fragment = new Home();
-                toolbar.setTitle("Upload");
+                toolbar.setTitle("Home");
                 break;
 
             case R.id.navigation_profile:
@@ -72,5 +80,53 @@ public class Bottommenu extends AppCompatActivity implements BottomNavigationVie
             return true;
         }
         return false;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                AlertDialog.Builder builder = new AlertDialog.Builder(Bottommenu.this);
+                builder.setTitle(R.string.app_name);
+                builder.setIcon(R.mipmap.ic_launcher);
+                builder.setMessage("Do you want to exit?")
+                        .setCancelable(false)
+                        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                moveTaskToBack(true);
+                            }
+                        })
+                        .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                dialog.cancel();
+                            }
+                        });
+                AlertDialog alert = builder.create();
+                alert.show();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onBackPressed() {
+
+            AlertDialog.Builder builder = new AlertDialog.Builder(Bottommenu.this);
+            builder.setTitle(R.string.app_name);
+            builder.setIcon(R.mipmap.ic_launcher);
+            builder.setMessage("Do you want to exit?")
+                    .setCancelable(false)
+                    .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            moveTaskToBack(true);
+                        }
+                    })
+                    .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            dialog.cancel();
+                        }
+                    });
+            AlertDialog alert = builder.create();
+            alert.show();
     }
 }
