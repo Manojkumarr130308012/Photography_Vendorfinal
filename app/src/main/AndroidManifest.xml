@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.shashank.platform.loginui">
+    package="com.astr.hc.celebrations">
 
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -29,16 +29,16 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/MyMaterialTheme4">
-        <activity android:name=".Activity.Planupgrade"></activity>
+        <activity android:name="com.astr.hc.celebrations.Activity.Planupgrade"></activity>
         <activity
-            android:name=".Activity.Editprofile"
+            android:name="com.astr.hc.celebrations.Activity.Editprofile"
             android:theme="@style/noAppTheme" />
         <activity
-            android:name=".Activity.FullScreen"
+            android:name="com.astr.hc.celebrations.Activity.FullScreen"
             android:screenOrientation="landscape"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".Activity.Splash"
+            android:name="com.astr.hc.celebrations.Activity.Splash"
             android:configChanges="orientation|screenSize"
             android:theme="@style/AppTheme.NoActionBar"
             android:windowSoftInputMode="stateHidden|adjustPan">
@@ -48,16 +48,16 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".Activity.Imagepick" />
-        <activity android:name=".Activity.Plans" />
+        <activity android:name="com.astr.hc.celebrations.Activity.Imagepick" />
+        <activity android:name="com.astr.hc.celebrations.Activity.Plans" />
         <activity
-            android:name=".Activity.Register"
+            android:name="com.astr.hc.celebrations.Activity.Register"
             android:configChanges="orientation|screenSize"
             android:theme="@style/noAppTheme"
             android:windowSoftInputMode="stateHidden|adjustPan" />
-        <activity android:name=".Activity.Image"
+        <activity android:name="com.astr.hc.celebrations.Activity.Image"
             android:theme="@style/AppTheme.NoActionBar"/>
-        <activity android:name=".Activity.Bottommenu">
+        <activity android:name="com.astr.hc.celebrations.Activity.Bottommenu">
 
             <!-- <intent-filter> -->
             <!-- <action android:name="android.intent.action.MAIN" /> -->
@@ -67,14 +67,14 @@
             <!-- </intent-filter> -->
         </activity>
         <activity
-            android:name=".Activity.MainActivity"
+            android:name="com.astr.hc.celebrations.Activity.MainActivity"
             android:configChanges="orientation|screenSize"
             android:theme="@style/AppTheme.NoActionBar"
             android:windowSoftInputMode="stateHidden|adjustPan" />
 
         <meta-data
             android:name="com.razorpay.ApiKey"
-            android:value="rzp_test_1DP5mmOlF5G5ag" />
+            android:value="rzp_live_9iwQ2J6jQ2eJhI" />
     </application>
 
 </manifest>

@@ -315,16 +315,14 @@
                 </com.google.android.material.textfield.TextInputLayout>
 
 
-                <com.tiper.MaterialSpinner
-                    android:id="@+id/location"
-                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                <com.astr.hc.celebrations.Util.MultipleSelectionSpinner
+                    android:id="@+id/mSpinner"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Location"
                     android:layout_marginTop="20dp"
                     android:layout_weight="1.2"
-                    app:spinnerMode="dropdown" />
-
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    android:layout_centerVertical="true"/>
 
                 <com.tiper.MaterialSpinner
                     android:id="@+id/category"
@@ -332,6 +330,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="category"
+                    android:visibility="gone"
                     android:layout_marginTop="20dp"
                     android:layout_weight="1.2"
                     app:spinnerMode="dropdown" />
@@ -425,17 +424,77 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="Choose Service Tags"
+                    android:visibility="gone"
                     android:textColor="@color/colorPrimary"
                    ></TextView>
 
 
                 <com.google.android.material.chip.ChipGroup
                     android:id="@+id/chipGroup"
+                    android:visibility="gone"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="20dp"
                     android:background="#F3EEEE"
                     />
+
+
+                <com.tiper.MaterialSpinner
+                    android:id="@+id/state"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="State"
+                    android:layout_marginTop="20dp"
+                    android:layout_weight="1.2"
+                    app:spinnerMode="dropdown" />
+
+
+                <com.tiper.MaterialSpinner
+                    android:id="@+id/location"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="City"
+                    android:layout_marginTop="20dp"
+                    android:layout_weight="1.2"
+                    app:spinnerMode="dropdown" />
+
+
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/experience"
+                    android:hint="Experience"
+                    android:layout_marginTop="10dp"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    >
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/Experience"
+                        android:inputType="text"/>
+                </com.google.android.material.textfield.TextInputLayout>
+
+
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/achivement"
+                    android:hint="Achivement"
+                    android:layout_marginTop="10dp"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    >
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/Achivement"
+                        android:inputType="text"/>
+                </com.google.android.material.textfield.TextInputLayout>
 
 
 
