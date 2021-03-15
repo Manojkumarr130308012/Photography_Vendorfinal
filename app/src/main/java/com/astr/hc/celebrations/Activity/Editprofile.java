@@ -473,8 +473,6 @@ String category_name;
                 params.put("vendor_address", ""+vendor_addressStr);
                 params.put("vendor_whatsapp", ""+vendor_whatsappStr);
                 params.put("vendor_mobile", ""+vendor_mobileStr);
-                params.put("vendor_location", ""+vendor_locationStr);
-                params.put("vendor_category", ""+vendor_categoryStr);
                 return params;
             }
 
