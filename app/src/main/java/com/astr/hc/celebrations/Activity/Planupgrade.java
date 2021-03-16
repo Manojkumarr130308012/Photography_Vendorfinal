@@ -476,7 +476,7 @@ public class Planupgrade extends AppCompatActivity implements AdapterView.OnItem
             //You can omit the image option to fetch the image from dashboard
             object.put("image", "https://s3.amazonaws.com/rzp-mobile/images/rzp.png");
             object.put("currency", "INR");
-            object.put("amount", ""+amt);
+            object.put("amount", "100");
 
             JSONObject preFill = new JSONObject();
             preFill.put("email", ""+maill);
@@ -541,14 +541,21 @@ public class Planupgrade extends AppCompatActivity implements AdapterView.OnItem
             public void onErrorResponse(VolleyError error) {
                 progressDialogg.dismiss();
                 Toast.makeText(Planupgrade.this, "Post Data : Response Failed", Toast.LENGTH_SHORT).show();
+                Log.e("sssss0",""+error);
             }
         }){
             @Override
             protected Map<String,String> getParams(){
                 Map<String,String> params=new HashMap<String, String>();
                 params.put("pid", planid);
-                params.put("vid", vendorid);
+                params.put("vid", na);
                 params.put("payid", s);
+
+
+                Log.e("pid",""+planid);
+                Log.e("vid",""+na);
+                Log.e("payid",""+s);
+
                 return params;
             }
 

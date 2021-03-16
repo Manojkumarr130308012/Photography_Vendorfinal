@@ -3,6 +3,7 @@ package com.astr.hc.celebrations.Util;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.widget.ArrayAdapter;
 import android.widget.SpinnerAdapter;
 
@@ -62,6 +63,9 @@ public class MultipleSelectionSpinner extends AppCompatSpinner implements
         builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface arg0, int arg1) {
+
+
+                Log.e("dddddddddddddddd",""+_items[1]);
 
             }
 
