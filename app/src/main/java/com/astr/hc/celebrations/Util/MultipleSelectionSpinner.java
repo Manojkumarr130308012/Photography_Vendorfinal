@@ -65,7 +65,7 @@ public class MultipleSelectionSpinner extends AppCompatSpinner implements
             public void onClick(DialogInterface arg0, int arg1) {
 
 
-                Log.e("dddddddddddddddd",""+_items[1]);
+                Log.e("dddddddddddddddd",""+mSelection);
 
             }
 
