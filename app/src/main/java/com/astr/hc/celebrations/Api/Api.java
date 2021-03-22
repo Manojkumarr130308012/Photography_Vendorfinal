@@ -20,6 +20,7 @@ public class Api {
     public static final String planupgradeurl=Mainurl+"vplan?pid=";
 
     public static final String catgorurl=Mainurl+"category";
+    public static final String catgor1url=Mainurl+"tcategory";
     public static final String videosurl=Mainurl+"videos?vid=";
     public static final String homeplanurl=Mainurl+"cplan?id=";
     public static final String imagsurl=Mainurl+"images?vid=";
@@ -37,7 +38,7 @@ public class Api {
     public static final String serviceurl=Mainurl+"services";
 
 
-    public static final String registerurl=Mainurl+"vsingup";
+    public static final String registerurl=Mainurl+"vendor_singup";
 
 
 }

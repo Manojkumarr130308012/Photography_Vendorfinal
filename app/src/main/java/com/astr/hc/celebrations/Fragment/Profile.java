@@ -9,6 +9,7 @@ import android.os.Bundle;
 import androidx.fragment.app.Fragment;
 
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -42,6 +43,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import de.hdodenhof.circleimageview.CircleImageView;
+
+import static android.content.Context.MODE_PRIVATE;
 
 
 public class Profile extends Fragment {
@@ -86,6 +89,11 @@ Button upgrade,logoutt;
     String vendor_amount;
     String vendor_status ;
             String vendor_plan ;
+    SharedPreferences mPreferences;
+    SharedPreferences.Editor mEditor;
+    SharedPreferences sh;
+
+    int defalt;
     public Profile() {
         // Required empty public constructor
     }
@@ -105,6 +113,13 @@ Button upgrade,logoutt;
             na = res.getString(1);
             pa = res.getString(2);
         }
+        mPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        mEditor = mPreferences.edit();
+
+//        sh = getActivity().getSharedPreferences("MyPrefs", MODE_PRIVATE);
+//        defalt=sh.getInt("Name", 0);
+        Log.e("defalt",""+defalt);
+
         personalinfobtn = view.findViewById(R.id.personalinfobtn);
         Bussinessbtn = view.findViewById(R.id.Bussinessbtn);
         edit = view.findViewById(R.id.edit);
@@ -266,6 +281,7 @@ Button upgrade,logoutt;
                          vendor_status = obj.getString("vendor_status");
 //                        vendor_amount = obj.getString("vendor_status");
                          vendor_plan = obj.getString("vendor_plan");
+                         vendor_plan = obj.getString("vendor_plan");
 
                         Picasso.with(getActivity()).load(vendor_proof).resize(300, 300).into(image);
                         stuid.setText(""+vendor_id);
@@ -278,9 +294,11 @@ Button upgrade,logoutt;
                         address.setText(""+vendor_address);
                         membershipid.setText(""+vendor_plan);
                         bussness.setText(""+vendor_cname);
-
+                            defalt= Integer.parseInt(obj.getString("basic"));
 //                        birthdate.setText(""+dobstr);
-
+                        if (defalt==1){
+                            upgrade.setVisibility(View.VISIBLE);
+                        }
 
                     } else {
                         Toast.makeText(getActivity(), ""+msg, Toast.LENGTH_SHORT).show();

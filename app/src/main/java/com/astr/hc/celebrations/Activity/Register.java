@@ -6,8 +6,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.Manifest;
 import android.app.DatePickerDialog;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -25,6 +27,8 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.Toast;
 
@@ -35,6 +39,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.astr.hc.celebrations.Util.MultipleSelectionSpinner;
+import com.astr.hc.celebrations.Util.MultipleSelectionSpinner1;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
 import com.google.android.material.textfield.TextInputEditText;
@@ -85,6 +90,8 @@ public class Register extends AppCompatActivity implements Validator.ValidationL
     List<String> stateid = new ArrayList<>();
     List<String> catgoryid = new ArrayList<>();
     List<String> catgoryname = new ArrayList<>();
+    List<String> catgoryid1 = new ArrayList<>();
+    List<String> catgoryname1= new ArrayList<>();
     List<String> servicename = new ArrayList<>();
     MaterialSpinner loc,category,state;
     String location="";
@@ -143,9 +150,14 @@ public class Register extends AppCompatActivity implements Validator.ValidationL
     public static int crossMarkAroundBox =0X274E;
     public static String dash ="-";
     private Spinner mySpinner;
-
+    private RadioGroup radioGroup;
     MultipleSelectionSpinner mSpinner;
+    MultipleSelectionSpinner1 mSpinner1;
     List<String> list = new ArrayList<String>();
+    SharedPreferences sharedpreferences;
+    public static final String MyPREFERENCES = "MyPrefs" ;
+    int a=0;
+    String categorysteid,categorystename;
     String dobstring,stateidstr,firstnamestring,Achivementsring,Experiencestring,lastnamestring,passwordstring,mobilestring,watsappstring,emailstring,amountstring,companynamestring,dobsting,addressstring,descriptionstring;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -164,12 +176,54 @@ public class Register extends AppCompatActivity implements Validator.ValidationL
         IDProf2 = (ImageView) findViewById(R.id.IdProf2);
         password = findViewById(R.id.password);
 
+        radioGroup = (RadioGroup) findViewById(R.id.radioGroup);
+        radioGroup.clearCheck();
+        mSpinner = findViewById(R.id.mSpinner);
+        mSpinner1 = findViewById(R.id.mSpinner1);
+        sharedpreferences = getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
+
+        mSpinner.setVisibility(View.GONE);
+        mSpinner1.setVisibility(View.GONE);
+
+        radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                RadioButton rb = (RadioButton) group.findViewById(checkedId);
+                if (null != rb) {
+                    Toast.makeText(Register.this, rb.getText(), Toast.LENGTH_SHORT).show();
+                    String type=""+rb.getText();
+
+                    if (type.equals("Yes")){
+                        mSpinner.setVisibility(View.GONE);
+                        mSpinner1.setVisibility(View.VISIBLE);
+//
+//                        SharedPreferences.Editor editor = sharedpreferences.edit();
+//                        editor.clear();
+//                        editor.putInt("Name", 1);
+                        a=1;
+//                        editor.commit();
+
+                    }else{
+                        mSpinner.setVisibility(View.VISIBLE);
+                        mSpinner1.setVisibility(View.GONE);
+//                        SharedPreferences.Editor editor = sharedpreferences.edit();
+//                        editor.clear();
+//                        editor.putInt("Name", 0);
+                        a=0;
+//                        editor.commit();
+
+                    }
+
+                }
+
+            }
+        });
 
 
         loc=findViewById(R.id.location);
         state=findViewById(R.id.state);
         category=findViewById(R.id.category);
-        mSpinner = findViewById(R.id.mSpinner);
+
         services=findViewById(R.id.chipGroup);
         dob=findViewById(R.id.dob);
 
@@ -223,6 +277,7 @@ public class Register extends AppCompatActivity implements Validator.ValidationL
         getstate();
         getservice();
         getcatgory();
+        getcatgory1();
 
 
 
@@ -792,6 +847,55 @@ public class Register extends AppCompatActivity implements Validator.ValidationL
 
 
     }
+
+
+    public void getcatgory1() {
+
+
+
+        RequestQueue requestQueue = Volley.newRequestQueue(this);
+        JSONObject object = new JSONObject();
+
+
+        String url = Api.catgor1url;
+
+        // Enter the correct url for your api service site
+
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, url, null,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+
+                        try {
+//                            message = (String) response.get("status");
+                            Log.e("xdddddddddddd", "" + response);
+
+                            JSONArray jObject1 = response.getJSONArray("category");
+
+                            for (int i = 0; i < jObject1.length(); i++) {
+                                JSONObject jsonObject = jObject1.getJSONObject(i);
+                                catgoryname1.add(jsonObject.getString("category_name"));
+                                catgoryid1.add(jsonObject.getString("category_id"));
+                            }
+                            mSpinner1.setItems(catgoryname1,catgoryid1);
+//                    mTxtExpense.setText(objResDetails.getTodayPayments()+" Rs");
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.e("xddddd", "" + error);
+
+            }
+        });
+        requestQueue.add(jsonObjectRequest);
+
+
+    }
     public void getservice() {
 
 
@@ -1052,6 +1156,8 @@ public class Register extends AppCompatActivity implements Validator.ValidationL
                 // Dismiss the progress dialog after done uploading.
 //                progressDialog.dismiss();
                 progressDialog.dismiss();
+
+                Log.e("string1",""+string1);
                 // Printing uploading success message coming from server on android app.
                 Toast.makeText(Register.this, "Your Registration Success!", Toast.LENGTH_LONG).show();
 
@@ -1070,10 +1176,15 @@ public class Register extends AppCompatActivity implements Validator.ValidationL
                 Register.ImageProcessClass imageProcessClass = new Register.ImageProcessClass();
 
                 HashMap<String, String> HashMapParams = new HashMap<String, String>();
+                 if (a==1){
+                      categorysteid=mSpinner1.getSelectedItemsAsString();
+                      categorystename=mSpinner1.buildSelectedItemString();
+                 }else{
+                       categorysteid=mSpinner.getSelectedItemsAsString();
+                       categorystename=mSpinner.buildSelectedItemString();
+                 }
 
-String categorysteid=mSpinner.getSelectedItemsAsString();
-String categorystename=mSpinner.buildSelectedItemString();
-Log.e("dddddddd",""+categorysteid);
+
                 HashMapParams.put("fname",""+firstnamestring);
                 HashMapParams.put("lname",""+lastnamestring);
                 HashMapParams.put("mobile",""+mobilestring);
@@ -1088,12 +1199,13 @@ Log.e("dddddddd",""+categorysteid);
                 HashMapParams.put("location",""+location);
                 HashMapParams.put("category",""+categorysteid);
                 HashMapParams.put("ncategory",""+categorystename);
-                HashMapParams.put("service",""+s);
                 HashMapParams.put("password",""+passwordstring);
+                HashMapParams.put("service","");
                 HashMapParams.put("image",""+ConvertImage);
                 HashMapParams.put("proof",""+ConvertImage1);
                 HashMapParams.put("exp",""+Experiencestring);
                 HashMapParams.put("ach",""+Achivementsring);
+                HashMapParams.put("basic",""+a);
 
                 String FinalData = imageProcessClass.ImageHttpRequest(Api.registerurl, HashMapParams);
 

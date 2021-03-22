@@ -5,6 +5,7 @@ import android.app.ProgressDialog;
 import android.content.ClipboardManager;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
@@ -78,6 +79,9 @@ import static android.content.Context.CLIPBOARD_SERVICE;
 
 public class Home extends Fragment {
 View view;
+    SharedPreferences mPreferences;
+    SharedPreferences.Editor mEditor;
+    SharedPreferences sh;
     GridView simpleGrid;
     Gallery simpleGallery;
     CustomGalleryAdapter customGalleryAdapter;

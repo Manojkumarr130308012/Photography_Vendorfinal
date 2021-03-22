@@ -57,7 +57,8 @@ public class Plans extends AppCompatActivity implements AdapterView.OnItemClickL
     String vendorid,maill,mobb;
     private SharedPreferences mPreferences;
     private SharedPreferences.Editor mEditor;
-
+    SharedPreferences sh;
+    int defalt;
     String image,videos;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,6 +72,8 @@ public class Plans extends AppCompatActivity implements AdapterView.OnItemClickL
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setTitle("Chhose Your Plan");
+        sh = getSharedPreferences("MySharedPref", MODE_PRIVATE);
+        defalt=sh.getInt("Name", 0);
 
         Intent intent = getIntent();
         vendorid= intent.getStringExtra("vendorid");
@@ -79,6 +82,12 @@ public class Plans extends AppCompatActivity implements AdapterView.OnItemClickL
         mEditor = mPreferences.edit();
         mobb  = mPreferences.getString("v_mob", "");
         maill  = mPreferences.getString("v_mail", "");
+
+
+
+        if (defalt == 1){
+            startPayment1();
+        }
 
         choose.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -399,6 +408,40 @@ public class Plans extends AppCompatActivity implements AdapterView.OnItemClickL
             object.put("prefill", preFill);
 
             checkout.open(activity,object);
+
+        } catch (JSONException e) {
+            Toast.makeText(activity, "Exception :"+e.getMessage(), Toast.LENGTH_SHORT).show();
+            e.printStackTrace();
+        }
+    }
+
+
+    private void startPayment1() {
+        final Activity activity = this;
+        final Checkout checkout = new Checkout();
+
+        JSONObject object = new JSONObject();
+        int amt = 299 * 100;
+        try {
+            object.put("key", "rzp_live_9iwQ2J6jQ2eJhI");
+            object.put("name", "Happy Celebrations");
+            object.put("description", "Plan Description");
+            //You can omit the image option to fetch the image from dashboard
+            object.put("image", "https://s3.amazonaws.com/rzp-mobile/images/rzp.png");
+            object.put("currency", "INR");
+            object.put("amount", ""+amt);
+
+            JSONObject preFill = new JSONObject();
+            preFill.put("email", ""+maill);
+            preFill.put("contact", ""+mobb);
+
+            object.put("prefill", preFill);
+
+            checkout.open(activity,object);
+
+            planid="1";
+            image="150";
+            videos="3";
 
         } catch (JSONException e) {
             Toast.makeText(activity, "Exception :"+e.getMessage(), Toast.LENGTH_SHORT).show();

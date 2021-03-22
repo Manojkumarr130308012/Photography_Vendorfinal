@@ -313,7 +313,35 @@
                         android:inputType="textPassword"
                         android:layout_height="wrap_content"/>
                 </com.google.android.material.textfield.TextInputLayout>
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="If You Are Astrologer or Purohitar ?"
+                    android:textColor="@color/colorPrimary"
+                    android:layout_marginTop="15dp"
+                    ></TextView>
 
+                <RadioGroup
+                    android:id="@+id/radioGroup"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <RadioButton
+                        android:id="@+id/radioButton1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Yes"
+                        android:textSize="14dp"/>
+
+                    <RadioButton
+                        android:id="@+id/radioButton2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="No"
+                        android:textSize="14dp"/>
+
+                </RadioGroup>
 
                 <com.astr.hc.celebrations.Util.MultipleSelectionSpinner
                     android:id="@+id/mSpinner"
@@ -323,6 +351,18 @@
                     android:layout_weight="1.2"
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                     android:layout_centerVertical="true"/>
+
+
+
+                <com.astr.hc.celebrations.Util.MultipleSelectionSpinner1
+                    android:id="@+id/mSpinner1"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:layout_weight="1.2"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    android:layout_centerVertical="true"/>
+
 
                 <com.tiper.MaterialSpinner
                     android:id="@+id/category"
