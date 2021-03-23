@@ -297,7 +297,7 @@ Button upgrade,logoutt;
                             defalt= Integer.parseInt(obj.getString("basic"));
 //                        birthdate.setText(""+dobstr);
                         if (defalt==1){
-                            upgrade.setVisibility(View.VISIBLE);
+                            upgrade.setVisibility(View.GONE);
                         }
 
                     } else {

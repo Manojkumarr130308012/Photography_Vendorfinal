@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-        <color name="colorPrimary">#F44336</color>
-        <color name="colorPrimaryDark">#F44336</color>
-        <color name="colorAccent">#F44336</color>
+        <color name="colorPrimary">#990000</color>
+        <color name="colorPrimaryDark">#990000</color>
+        <color name="colorAccent">#990000</color>
         <color name="textInputLayout">#96ffffff</color>
         <color name="bgBottomNavigation">#ebed90</color>
         <color name="colorAccent2">#ebed90</color>

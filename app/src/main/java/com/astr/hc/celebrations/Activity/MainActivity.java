@@ -56,7 +56,7 @@ public class MainActivity extends AppCompatActivity implements PaymentResultList
      SharedPreferences.Editor mEditor;
     SharedPreferences sh;
     DBHelper dbHelper;
-    int defalt;
+    int defalt=0;
     String planid="1";
     String image="150";
     String videos="3";
@@ -250,9 +250,7 @@ public class MainActivity extends AppCompatActivity implements PaymentResultList
 
 
 
-                            if (defalt==1){
-                                startPayment1();
-                            }else{
+
                                 String vendor_pimage = obj.getString("vendor_pimage");
                                 String vendor_pvideo = obj.getString("vendor_pvideo");
                                 dbHelper.insertData(name,plan,vendor_pimage,vendor_pvideo);
@@ -260,7 +258,7 @@ public class MainActivity extends AppCompatActivity implements PaymentResultList
                                 Intent intent = new Intent(MainActivity.this, Bottommenu.class);
                                 startActivity(intent);
                                 overridePendingTransition(R.anim.slide_in_right,R.anim.slide_from_right);
-                            }
+
 
 
 
