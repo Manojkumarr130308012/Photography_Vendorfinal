@@ -222,15 +222,13 @@ public class MainActivity extends AppCompatActivity implements PaymentResultList
                         String mob = obj.getString("vendor_fname");
                         String sts = obj.getString("vendor_mobile");
                         String plan = obj.getString("vendor_plan");
-                        defalt= Integer.parseInt(obj.getString("basic"));
+                        defalt= Integer.parseInt(obj.getString("vendor_basic"));
                         mEditor.putString("v_mob", obj.getString("vendor_mobile"));
                         mEditor.putString("v_mail", obj.getString("vendor_email"));
                         mEditor.commit();
 
 
                         if (plan.equals("0")) {
-
-
                             if (defalt==1){
                                 startPayment1();
                             }else{
@@ -347,7 +345,7 @@ public class MainActivity extends AppCompatActivity implements PaymentResultList
         final Checkout checkout = new Checkout();
 
         JSONObject object = new JSONObject();
-        int amt = 299 * 100;
+        int amt = 1 * 100;
         try {
             object.put("key", "rzp_live_9iwQ2J6jQ2eJhI");
             object.put("name", "Happy Celebrations");

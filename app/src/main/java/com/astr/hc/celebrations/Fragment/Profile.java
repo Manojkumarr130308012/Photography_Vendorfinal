@@ -294,7 +294,7 @@ Button upgrade,logoutt;
                         address.setText(""+vendor_address);
                         membershipid.setText(""+vendor_plan);
                         bussness.setText(""+vendor_cname);
-                            defalt= Integer.parseInt(obj.getString("basic"));
+                            defalt= Integer.parseInt(obj.getString("vendor_basic"));
 //                        birthdate.setText(""+dobstr);
                         if (defalt==1){
                             upgrade.setVisibility(View.GONE);

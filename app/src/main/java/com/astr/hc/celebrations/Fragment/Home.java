@@ -430,12 +430,14 @@ startActivity(i);
                 }
                 if (getActivity()!=null) {
                     //set layout manager and adapter for "GridView"
+if(videoArrayList.size() != 0){
+    mRecyclerAdapter = new YoutubeRecyclerAdapter(videoArrayList);
+    RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getActivity());
+    recyclerView.setLayoutManager(mLayoutManager);
+    recyclerView.setItemAnimator(new DefaultItemAnimator());
+    recyclerView.setAdapter(mRecyclerAdapter);
+}
 
-                    mRecyclerAdapter = new YoutubeRecyclerAdapter(videoArrayList);
-                    RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getActivity());
-                    recyclerView.setLayoutManager(mLayoutManager);
-                    recyclerView.setItemAnimator(new DefaultItemAnimator());
-                    recyclerView.setAdapter(mRecyclerAdapter);
 
 
 

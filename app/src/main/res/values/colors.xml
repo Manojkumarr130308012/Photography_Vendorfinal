@@ -4,8 +4,8 @@
         <color name="colorPrimaryDark">#990000</color>
         <color name="colorAccent">#990000</color>
         <color name="textInputLayout">#96ffffff</color>
-        <color name="bgBottomNavigation">#ebed90</color>
-        <color name="colorAccent2">#ebed90</color>
+        <color name="bgBottomNavigation">#fff</color>
+        <color name="colorAccent2">#fff</color>
         <color name="colorAccent3">#F44336</color>
 
 
