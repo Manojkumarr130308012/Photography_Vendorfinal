@@ -85,9 +85,9 @@ public class Plans extends AppCompatActivity implements AdapterView.OnItemClickL
 
 
 
-        if (defalt == 1){
-            startPayment1();
-        }
+//        if (defalt == 1){
+//            startPayment1();
+//        }
 
         choose.setOnClickListener(new View.OnClickListener() {
             @Override

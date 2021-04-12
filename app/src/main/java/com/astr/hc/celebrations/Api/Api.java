@@ -9,6 +9,8 @@ public class Api {
     public static final String planpayamounturl=Mainurl+"vendor_plan";
 
     public static final String Loginurl=Mainurl+"vendor_login";
+    public static final String API_FORGOT_PASSWORD=Mainurl+"vendor_login";
+    public static final String API_FORGOT_CHANGE_PASSWORD=Mainurl+"vendor_login";
 
     public static final String profileurl=Mainurl+"vendor_profile";
     public static final String updateprofileurl=Mainurl+"vprofile";

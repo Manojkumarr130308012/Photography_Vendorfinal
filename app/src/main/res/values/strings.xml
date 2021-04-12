@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">Happy Celebrations Vendor</string>
     <!-- TODO: Remove or change this placeholder text -->
-
+    <string name="top_icon">TOP ICON</string>
     <string name="i_agree">I agree to the terms of use</string>
     <string name="username">Username</string>
     <string name="password">Password</string>

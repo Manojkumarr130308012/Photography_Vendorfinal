@@ -97,8 +97,8 @@ public class Register extends AppCompatActivity implements Validator.ValidationL
     String location="";
     String catg="";
     ChipGroup services;
-    String imagestring="",imagestring1="",imagestring2="",Document_img1;
-    ImageView IDProf, IDProf1, IDProf2;
+    String imagestring="",imagestring1="",imagestring2="",imagestring3="",imagestring4="",Document_img1;
+    ImageView IDProf, IDProf1, IDProf2,IdProf3,IdProf4;
     public  static final int RequestPermissionCode  = 1 ;
     String s = null;
     DatePickerDialog datepicker;
@@ -141,7 +141,7 @@ public class Register extends AppCompatActivity implements Validator.ValidationL
     @Length(min = 3, max = 100)
     TextInputEditText password;
     private Validator validator;
-    Bitmap bitmap1,bitmap2;
+    Bitmap bitmap1,bitmap2,bitmap3,bitmap4;
     boolean check = true;
     public static String oneSpace =" ";
     public static int tikMark =0X2714;
@@ -174,6 +174,8 @@ public class Register extends AppCompatActivity implements Validator.ValidationL
         lin4=findViewById(R.id.lin4);
         IDProf1 = (ImageView) findViewById(R.id.IdProf1);
         IDProf2 = (ImageView) findViewById(R.id.IdProf2);
+        IdProf3 = (ImageView) findViewById(R.id.IdProf3);
+        IdProf4 = (ImageView) findViewById(R.id.IdProf4);
         password = findViewById(R.id.password);
 
         radioGroup = (RadioGroup) findViewById(R.id.radioGroup);
@@ -445,6 +447,7 @@ public class Register extends AppCompatActivity implements Validator.ValidationL
                             stepView.done(true);
 
                         }
+                        ImageUploadToServerFunction();
 //                        RegisterData();
 //                        SendDetail();
                     }
@@ -487,7 +490,7 @@ public class Register extends AppCompatActivity implements Validator.ValidationL
 
                         }
 //                        RegisterData();
-                        ImageUploadToServerFunction();
+
                     }
                 }
             }
@@ -544,7 +547,6 @@ public class Register extends AppCompatActivity implements Validator.ValidationL
         steps.add("Basic Details");
         steps.add("Business Details");
         steps.add("Documents");
-        steps.add("Final");
         steps.set(steps.size() - 1, steps.get(steps.size() - 1));
         stepView.setSteps(steps);
         IDProf1.setOnClickListener(new View.OnClickListener() {
@@ -559,6 +561,27 @@ public class Register extends AppCompatActivity implements Validator.ValidationL
             public void onClick(View v) {
 
                 requestPermission1();
+
+
+            }
+        });
+
+
+        IdProf3.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                requestPermission2();
+
+
+            }
+        });
+
+        IdProf4.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                requestPermission3();
 
 
             }
@@ -622,6 +645,57 @@ public class Register extends AppCompatActivity implements Validator.ValidationL
         });
         builder.show();
     }
+
+    private void selectImage2() {
+        final CharSequence[] options = { "Take Photo", "Choose from Gallery","Cancel" };
+        AlertDialog.Builder builder = new AlertDialog.Builder(Register.this);
+        builder.setTitle("Add Photo!");
+        builder.setItems(options, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int item) {
+                if (options[item].equals("Take Photo"))
+                {
+                    Intent takePicture = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                    startActivityForResult(takePicture, 5);
+                }
+                else if (options[item].equals("Choose from Gallery"))
+                {
+                    Intent pickPhoto = new Intent(Intent.ACTION_PICK,
+                            android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                    startActivityForResult(pickPhoto, 6);
+                }
+                else if (options[item].equals("Cancel")) {
+                    dialog.dismiss();
+                }
+            }
+        });
+        builder.show();
+    }
+    private void selectImage3() {
+        final CharSequence[] options = { "Take Photo", "Choose from Gallery","Cancel" };
+        AlertDialog.Builder builder = new AlertDialog.Builder(Register.this);
+        builder.setTitle("Add Photo!");
+        builder.setItems(options, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int item) {
+                if (options[item].equals("Take Photo"))
+                {
+                    Intent takePicture = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                    startActivityForResult(takePicture, 7);
+                }
+                else if (options[item].equals("Choose from Gallery"))
+                {
+                    Intent pickPhoto = new Intent(Intent.ACTION_PICK,
+                            android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                    startActivityForResult(pickPhoto, 8);
+                }
+                else if (options[item].equals("Cancel")) {
+                    dialog.dismiss();
+                }
+            }
+        });
+        builder.show();
+    }
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -649,7 +723,7 @@ public class Register extends AppCompatActivity implements Validator.ValidationL
                 Bitmap imageBitmap = (Bitmap) extras.get("data");
                 IDProf2.setImageBitmap(imageBitmap);
                 bitmap2=imageBitmap;
-                BitMapToString1(imageBitmap);
+                BitMapToString1(bitmap2);
             } else if (requestCode == 4) {
                 Uri selectedImage = data.getData();
                 IDProf2.setImageURI(selectedImage);
@@ -657,6 +731,45 @@ public class Register extends AppCompatActivity implements Validator.ValidationL
                 try {
                     bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), selectedImage);
                     bitmap2=bitmap;
+                    BitMapToString1(bitmap2);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                ;
+                BitMapToString1(bitmap);
+            }else if (requestCode == 5) {
+                Bundle extras = data.getExtras();
+                Bitmap imageBitmap = (Bitmap) extras.get("data");
+                IdProf3.setImageBitmap(imageBitmap);
+                bitmap3=imageBitmap;
+                BitMapToString2(imageBitmap);
+            } else if (requestCode == 6) {
+                Uri selectedImage = data.getData();
+                IdProf3.setImageURI(selectedImage);
+                Bitmap bitmap = null;
+                try {
+                    bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), selectedImage);
+                    bitmap3=bitmap;
+                    BitMapToString2(bitmap3);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                ;
+                BitMapToString1(bitmap);
+            }else if (requestCode == 7) {
+                Bundle extras = data.getExtras();
+                Bitmap imageBitmap = (Bitmap) extras.get("data");
+                IdProf4.setImageBitmap(imageBitmap);
+                bitmap4=imageBitmap;
+                BitMapToString3(bitmap4);
+            } else if (requestCode == 8) {
+                Uri selectedImage = data.getData();
+                IdProf4.setImageURI(selectedImage);
+                Bitmap bitmap = null;
+                try {
+                    bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), selectedImage);
+                    bitmap4=bitmap;
+                    BitMapToString3(bitmap4);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -676,6 +789,17 @@ public class Register extends AppCompatActivity implements Validator.ValidationL
         userImage1.compress(Bitmap.CompressFormat.PNG, 60, baos);
         byte[] b = baos.toByteArray();
         imagestring2 = Base64.encodeToString(b, Base64.DEFAULT);
+    }
+    public void BitMapToString2(Bitmap userImage1) {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        userImage1.compress(Bitmap.CompressFormat.PNG, 60, baos);
+        byte[] b = baos.toByteArray();
+        imagestring3 = Base64.encodeToString(b, Base64.DEFAULT);
+    } public void BitMapToString3(Bitmap userImage1) {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        userImage1.compress(Bitmap.CompressFormat.PNG, 60, baos);
+        byte[] b = baos.toByteArray();
+        imagestring4 = Base64.encodeToString(b, Base64.DEFAULT);
     }
     public Bitmap getResizedBitmap(Bitmap image, int maxSize) {
         int width = image.getWidth();
@@ -1396,6 +1520,46 @@ public class Register extends AppCompatActivity implements Validator.ValidationL
             public void onPermissionGranted() {
 //                selectImagesFromGallery();
                 selectImage1();
+            }
+
+            @Override
+            public void onPermissionDenied(List<String> deniedPermissions) {
+                Toast.makeText(Register.this, "Permission Denied\n" + deniedPermissions.toString(), Toast.LENGTH_SHORT).show();
+            }
+        };
+        TedPermission.with(this)
+                .setPermissionListener(permissionlistener)
+                .setDeniedMessage("If you reject permission,you can not use this service\n\nPlease turn on permissions at [Setting] > [Permission]")
+                .setPermissions(Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.CAMERA)
+                .check();
+    }
+
+
+    private void requestPermission2(){
+        com.gun0912.tedpermission.PermissionListener permissionlistener = new PermissionListener() {
+            @Override
+            public void onPermissionGranted() {
+//                selectImagesFromGallery();
+                selectImage2();
+            }
+
+            @Override
+            public void onPermissionDenied(List<String> deniedPermissions) {
+                Toast.makeText(Register.this, "Permission Denied\n" + deniedPermissions.toString(), Toast.LENGTH_SHORT).show();
+            }
+        };
+        TedPermission.with(this)
+                .setPermissionListener(permissionlistener)
+                .setDeniedMessage("If you reject permission,you can not use this service\n\nPlease turn on permissions at [Setting] > [Permission]")
+                .setPermissions(Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.CAMERA)
+                .check();
+    }
+    private void requestPermission3(){
+        com.gun0912.tedpermission.PermissionListener permissionlistener = new PermissionListener() {
+            @Override
+            public void onPermissionGranted() {
+//                selectImagesFromGallery();
+                selectImage3();
             }
 
             @Override

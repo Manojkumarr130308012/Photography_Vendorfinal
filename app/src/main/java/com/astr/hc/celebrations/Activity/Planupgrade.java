@@ -297,7 +297,13 @@ public class Planupgrade extends AppCompatActivity implements AdapterView.OnItem
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i)
                     {
-                        startPayment();
+                        if (planid.equals("1")) {
+
+                            freePlan(planid);
+
+                        } else {
+                            startPayment();
+                        }
 //                        finish();
                     }
                 })
@@ -312,7 +318,78 @@ public class Planupgrade extends AppCompatActivity implements AdapterView.OnItem
                 }).show();
     }
 
+    private void freePlan(String planid) {
 
+        String url=Api.planpayamounturl;
+        RequestQueue requestQueue;
+        requestQueue = Volley.newRequestQueue(getApplicationContext());
+
+        StringRequest strReq = new StringRequest(Request.Method.POST,
+                url, new Response.Listener<String>() {
+
+            @Override
+            public void onResponse(String response) {
+//                Log.d(TAG, "Register Response: " + response.toString());
+
+                try {
+                    JSONObject jObj = new JSONObject(response);
+                    boolean error = jObj.getBoolean("error");
+
+                    // Check for error node in json
+                    if (!error)
+                    {
+                        dbHelper.insertData(na,planid,image,videos);
+
+                        Intent i=new Intent(Planupgrade.this,Bottommenu.class);
+                        startActivity(i);
+                    }
+                    else
+                    {
+                        // Error in login. Get the error message
+                        String errorMsg = jObj.getString("error_msg");
+                        Toast.makeText(Planupgrade.this, ""+errorMsg, Toast.LENGTH_SHORT).show();
+                    }
+                }
+                catch (JSONException e)
+                {
+                    // JSON error
+                    e.printStackTrace();
+//                    toast("Json error: " + e.getMessage());
+                    Toast.makeText(Planupgrade.this, ""+e.getMessage(), Toast.LENGTH_SHORT).show();
+
+                }
+
+            }
+        }, new Response.ErrorListener() {
+
+            @Override
+            public void onErrorResponse(VolleyError error) {
+//                Log.e(TAG, "Login Error: " + error.getMessage());
+                Toast.makeText(Planupgrade.this, "Unknown Error occurred", Toast.LENGTH_SHORT).show();
+//                progressDialog.hide();
+            }
+        }) {
+
+            @Override
+            protected Map<String, String> getParams() {
+                // Posting parameters to login url
+                Map<String, String> params = new HashMap<>();
+                params.put("pid", planid);
+                params.put("vid", na);
+                params.put("payid", "Free");
+
+
+                return params;
+            }
+
+        };
+
+        // Adding request to request queue
+        requestQueue.add(strReq);
+        Intent i=new Intent(Planupgrade.this,Bottommenu.class);
+        startActivity(i);
+        Toast.makeText(this, "Free Plan Choosed Successfully! ", Toast.LENGTH_SHORT).show();
+    }
 /*
     private void setUpPayment() {
 

@@ -238,12 +238,6 @@ public class MainActivity extends AppCompatActivity implements PaymentResultList
                                 startActivity(intent);
                                 overridePendingTransition(R.anim.slide_in_right,R.anim.slide_from_right);
                             }
-
-
-
-
-
-
                         }else{
 
 
@@ -345,7 +339,7 @@ public class MainActivity extends AppCompatActivity implements PaymentResultList
         final Checkout checkout = new Checkout();
 
         JSONObject object = new JSONObject();
-        int amt = 1 * 100;
+        int amt = 299 * 100;
         try {
             object.put("key", "rzp_live_9iwQ2J6jQ2eJhI");
             object.put("name", "Happy Celebrations");
@@ -363,7 +357,7 @@ public class MainActivity extends AppCompatActivity implements PaymentResultList
 
             checkout.open(activity,object);
 
-            planid="1";
+            planid="2";
             image="150";
             videos="3";
 

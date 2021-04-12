@@ -6,30 +6,26 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 
-import com.chaos.view.PinView;
 import com.astr.hc.celebrations.R;
+import com.chaos.view.PinView;
 
-
-import br.com.simplepass.loading_button_lib.customViews.CircularProgressButton;
-
-public class ForgotOTPActivity extends AppCompatActivity {
-
+public class ForgotOTP extends AppCompatActivity {
+    Button btnSubmit;
     TextView displayTxt,textU;
     String maill,otpp,idd;
     PinView pinView;
-    CircularProgressButton submitButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_forgot_o_t_p);
-
+        setContentView(R.layout.activity_forgot_o_t_p2);
+        btnSubmit = findViewById(R.id.btnSubmit);
         displayTxt = findViewById(R.id.displayTxt);
         textU = findViewById(R.id.textView_noti);
         pinView = findViewById(R.id.pinView);
-        submitButton = findViewById(R.id.submitButton);
 
         Intent intent = getIntent();
         maill = intent.getStringExtra("maill");
@@ -38,11 +34,11 @@ public class ForgotOTPActivity extends AppCompatActivity {
 
         displayTxt.setText("OTP sent on your registered email address at "+maill);
 
-        submitButton.setOnClickListener(new View.OnClickListener() {
+        btnSubmit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (otpp.equals(pinView.getText().toString())) {
-                    Intent intent = new Intent(ForgotOTPActivity.this, ForgotPage.class);
+                    Intent intent = new Intent(ForgotOTP.this, ForgotPage.class);
                     intent.putExtra("idd",idd );
                     startActivity(intent);
                     finish();
